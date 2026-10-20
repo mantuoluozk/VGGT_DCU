@@ -1,0 +1,986 @@
+{
+  "utc": "2026-10-20T08:56:40.501067+00:00",
+  "weights": "checkpoint",
+  "resolution": 518,
+  "warmup": 2,
+  "iterations": 3,
+  "runs": [
+    {
+      "variant": "baseline",
+      "input": 8,
+      "times_ms": [
+        1052.7967009693384,
+        1027.5953880045563,
+        1027.4968610028736
+      ],
+      "median_ms": 1027.5953880045563,
+      "mean_ms": 1035.9629833255894,
+      "peak_allocated_GB": 9.692239872,
+      "agreement": {
+        "status": "REFERENCE"
+      }
+    },
+    {
+      "variant": "baseline",
+      "input": 32,
+      "times_ms": [
+        5258.635791018605,
+        5239.4163380376995,
+        5239.618169958703
+      ],
+      "median_ms": 5239.618169958703,
+      "mean_ms": 5245.890099671669,
+      "peak_allocated_GB": 10.917333504,
+      "agreement": {
+        "status": "REFERENCE"
+      }
+    },
+    {
+      "variant": "baseline",
+      "input": "kitchen4",
+      "times_ms": [
+        363.0305629922077,
+        347.76795195648447,
+        347.6602149894461
+      ],
+      "median_ms": 347.76795195648447,
+      "mean_ms": 352.8195766460461,
+      "peak_allocated_GB": 7.948729344,
+      "agreement": {
+        "status": "REFERENCE"
+      }
+    },
+    {
+      "variant": "cache_rope",
+      "input": 8,
+      "times_ms": [
+        1035.3572359890677,
+        1015.016620978713,
+        1015.08175797062
+      ],
+      "median_ms": 1015.08175797062,
+      "mean_ms": 1021.8185383128002,
+      "peak_allocated_GB": 9.69225472,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "cache_rope",
+      "input": 32,
+      "times_ms": [
+        5246.449110971298,
+        5225.803715991788,
+        5225.951072003227
+      ],
+      "median_ms": 5225.951072003227,
+      "mean_ms": 5232.7346329887705,
+      "peak_allocated_GB": 10.917348352,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "cache_rope",
+      "input": "kitchen4",
+      "times_ms": [
+        353.2639350160025,
+        335.7153930119239,
+        335.71922697592527
+      ],
+      "median_ms": 335.71922697592527,
+      "mean_ms": 341.5661850012839,
+      "peak_allocated_GB": 7.948729344,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "cache_position",
+      "input": 8,
+      "times_ms": [
+        1040.4698790516704,
+        1021.042769018095,
+        1020.9449540125206
+      ],
+      "median_ms": 1021.042769018095,
+      "mean_ms": 1027.485867360762,
+      "peak_allocated_GB": 9.79460352,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "cache_position",
+      "input": 32,
+      "times_ms": [
+        5232.947491982486,
+        5213.436099002138,
+        5213.596861984115
+      ],
+      "median_ms": 5213.596861984115,
+      "mean_ms": 5219.993484322913,
+      "peak_allocated_GB": 11.022369792,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "cache_position",
+      "input": "kitchen4",
+      "times_ms": [
+        356.4501670189202,
+        342.9861100157723,
+        342.9037689929828
+      ],
+      "median_ms": 342.9861100157723,
+      "mean_ms": 347.44668200922507,
+      "peak_allocated_GB": 8.135982592,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "cache_all",
+      "input": 8,
+      "times_ms": [
+        1037.2411439893767,
+        1008.7162199779414,
+        1008.9604509994388
+      ],
+      "median_ms": 1008.9604509994388,
+      "mean_ms": 1018.3059383222522,
+      "peak_allocated_GB": 9.79460352,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "cache_all",
+      "input": 32,
+      "times_ms": [
+        5220.985968946479,
+        5200.574632966891,
+        5200.42624801863
+      ],
+      "median_ms": 5200.574632966891,
+      "mean_ms": 5207.328949977334,
+      "peak_allocated_GB": 11.022369792,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "cache_all",
+      "input": "kitchen4",
+      "times_ms": [
+        346.7431589961052,
+        330.51519002765417,
+        330.643537978176
+      ],
+      "median_ms": 330.643537978176,
+      "mean_ms": 335.9672956673118,
+      "peak_allocated_GB": 8.135982592,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "heads_channels_last",
+      "input": 8,
+      "times_ms": [
+        1045.6497879931703,
+        1026.3905830215663,
+        1026.3944119797088
+      ],
+      "median_ms": 1026.3944119797088,
+      "mean_ms": 1032.8115943314817,
+      "peak_allocated_GB": 9.692971008,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "heads_channels_last",
+      "input": 32,
+      "times_ms": [
+        5254.999892029446,
+        5251.272508001421,
+        5243.465432024095
+      ],
+      "median_ms": 5251.272508001421,
+      "mean_ms": 5249.912610684987,
+      "peak_allocated_GB": 10.920144384,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "heads_channels_last",
+      "input": "kitchen4",
+      "times_ms": [
+        362.2935919556767,
+        346.7075319495052,
+        346.77856299094856
+      ],
+      "median_ms": 346.77856299094856,
+      "mean_ms": 351.92656229871017,
+      "peak_allocated_GB": 7.95201792,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "balanced",
+      "input": 8,
+      "times_ms": [
+        1028.0491869780235,
+        1008.7552729528397,
+        1008.8243309874088
+      ],
+      "median_ms": 1008.8243309874088,
+      "mean_ms": 1015.2095969727574,
+      "peak_allocated_GB": 9.797437952,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "balanced",
+      "input": 32,
+      "times_ms": [
+        5008.079534978606,
+        4977.598556957673,
+        4976.395557052456
+      ],
+      "median_ms": 4977.598556957673,
+      "mean_ms": 4987.357882996245,
+      "peak_allocated_GB": 13.289565696,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 2.086162567138672e-07,
+            "relative_l2": 5.9300997889977225e-08,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 2.384185791015625e-07,
+            "relative_l2": 1.6186183504629525e-09,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 4.76837158203125e-07,
+            "relative_l2": 1.3280632060741482e-07,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 1.1920928955078125e-07,
+            "relative_l2": 5.66637681220783e-10,
+            "allclose": true
+          }
+        }
+      }
+    },
+    {
+      "variant": "balanced",
+      "input": "kitchen4",
+      "times_ms": [
+        347.93834801530465,
+        330.6531119742431,
+        348.0181680060923
+      ],
+      "median_ms": 347.93834801530465,
+      "mean_ms": 342.20320933188003,
+      "peak_allocated_GB": 8.130545152,
+      "agreement": {
+        "status": "PASS",
+        "outputs": {
+          "pose_enc": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.0": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.1": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.2": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "pose_enc_list.3": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "depth_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          },
+          "world_points_conf": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0,
+            "allclose": true
+          }
+        }
+      }
+    }
+  ],
+  "profiles": [],
+  "scope": "Same model outputs, all heads retained, BF16 aggregator and original FP32 heads"
+}

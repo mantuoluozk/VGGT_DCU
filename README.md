@@ -234,3 +234,45 @@ python scripts/run_suite.py --source "$VGGT_SOURCE" \
 脚本默认将 Q/K/V 数据转为连续存储后进入 Flash 计算；模型初始化使用 1 个 CPU 线程，随后恢复为 8 线程计算。相关选项为 `--contiguous-qkv`、`--init-threads`，异常追踪选项为 `--anomaly`。八卡同步检查对每组参数及训练计算结果各抽取最多 257 个数据点。
 
 BF16 模型主干使用 Flash Attention；模型中负责相机参数计算的 FP32 部分保持原有精度设置。额外诊断工具为 `diagnose_flash.py`（Flash 计算检查）和 `distributed_probe.py`（八卡通信检查）。
+
+## 6. 可选推理优化
+
+提供 `--preset fused` 选项，通过重用位置数据、合并位置变换计算，以及调整深度和三维点输出的分组大小减少耗时。输入图片数量、分辨率、模型参数和输出字段保持不变；全部图片仍在主干中联合分析。
+
+以下使用官方预训练参数重新成对测量，每组预热 1 次、计时 3 次取中位数。与前面的随机初始化性能表分别记录。
+
+| 输入 | 图片数量 | 原实现 ms | 优化后 ms | 耗时降低 | 输出数值对照 |
+| --- | ---: | ---: | ---: | ---: | --- |
+| 518×518 | 8 | 1027.91 | 976.49 | 5.00% | 通过 |
+| 518×518 | 32 | 5240.06 | 4871.83 | 7.03% | 通过 |
+| 518×518 | 64 | 14024.36 | 13312.74 | 5.07% | 通过 |
+| 518×518 | 128 | 42294.93 | 40896.30 | 3.31% | 通过 |
+| 224×224 | 32 | 764.51 | 694.80 | 9.12% | 通过 |
+| 224×224 | 128 | 3578.26 | 3362.23 | 6.04% | 通过 |
+| 官方实景图片 | 4 | 348.26 | 314.57 | 9.67% | 通过 |
+
+优化可能增加临时显存使用，例如 518×518、64 张时由 12.99GB 增至 15.17GB。完整数据、数值检查范围和说明见 [推理优化评估](reports/VGGT_DCU_推理优化评估_20261020.md)。
+
+在容器内运行优化后的模型检查：
+
+```bash
+python scripts/inference.py correctness --preset fused \
+  --source /home/zk/vggt/vggt \
+  --checkpoint /home/zk/vggt/vggt_ckpt/model.pt \
+  --output results/inference_fused
+```
+
+将 `correctness` 换为 `benchmark` 可测量预训练模型性能。`fused` 需要本次镜像已提供的 Triton，首次运行包含编译开销；性能计时前需要预热。`--preset balanced` 仅使用位置数据重用和输出分组，默认 `--preset default` 使用原运行方式。这些选项仅适用于推理。
+
+同条件性能与输出对照：
+
+```bash
+python scripts/optimize_inference.py \
+  --source /home/zk/vggt/vggt \
+  --checkpoint /home/zk/vggt/vggt_ckpt/model.pt \
+  --frames 8 32 64 128 --warmup 1 --iterations 3 \
+  --variants baseline preset_fused --strict \
+  --output results/optimization_comparison
+```
+
+添加 `--resolution 224` 可测试较低分辨率，添加 `--real-images` 可同时检查官方示例图片。`triton_rope.py` 可独立检查融合位置计算，`make_optimization_report.py` 根据本次保存的成对结果生成优化评估。

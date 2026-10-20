@@ -1,5 +1,7 @@
 """Customer phases 2-4, with explicit assertions and same-image backend controls."""
 import gc
+import atexit
+from contextlib import ExitStack
 import time
 
 import torch
@@ -13,10 +15,18 @@ p.add_argument("--random-init", action="store_true", help="Benchmark with random
 p.add_argument("--warmup", type=int, default=2)
 p.add_argument("--iterations", type=int, default=5)
 p.add_argument("--max-frames", type=int, default=128)
+p.add_argument("--preset", choices=["default", "balanced", "fused"], default="default",
+               help="Optional output-preserving inference optimization")
 args = p.parse_args()
 setup(args)
 model = build(args, weights=args.phase == "correctness" or (args.phase == "benchmark" and not args.random_init))
-data = {"phase": args.phase, "backend": args.backend, "status": "PASS", "runs": []}
+runtime = ExitStack()
+atexit.register(runtime.close)
+if args.preset != "default":
+    from inference_presets import inference_preset
+    runtime.enter_context(inference_preset(model, args.preset))
+result_name = f"{args.phase}_{args.backend}" + (f"_{args.preset}" if args.preset != "default" else "")
+data = {"phase": args.phase, "backend": args.backend, "preset": args.preset, "status": "PASS", "runs": []}
 
 
 @torch.inference_mode()
@@ -126,10 +136,10 @@ else:
             except torch.OutOfMemoryError as error:
                 row = {"frames": frames, "resolution": resolution, "status": "OOM", "error": str(error)}
             data["runs"].append(row)
-            save(args, f"benchmark_{args.backend}", data)
+            save(args, result_name, data)
             if row["status"] == "OOM":
                 gc.collect()
                 torch.cuda.empty_cache()
                 break
 
-save(args, f"{args.phase}_{args.backend}", data)
+save(args, result_name, data)

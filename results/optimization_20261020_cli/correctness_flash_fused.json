@@ -1,0 +1,264 @@
+{
+  "utc": "2026-10-20T09:16:01.765467+00:00",
+  "phase": "correctness",
+  "backend": "flash",
+  "preset": "fused",
+  "status": "PASS",
+  "runs": [
+    {
+      "frames": 6,
+      "resolution": 518,
+      "dtype": "torch.float32",
+      "ms": 6185.480784974061,
+      "outputs": {
+        "pose_enc": {
+          "shape": [
+            1,
+            6,
+            9
+          ],
+          "min": -0.0037523293867707253,
+          "max": 1.4066886901855469
+        },
+        "pose_enc_list[0]": {
+          "shape": [
+            1,
+            6,
+            9
+          ],
+          "min": -0.005456156097352505,
+          "max": 1.3994189500808716
+        },
+        "pose_enc_list[1]": {
+          "shape": [
+            1,
+            6,
+            9
+          ],
+          "min": -0.0036843656562268734,
+          "max": 1.4047268629074097
+        },
+        "pose_enc_list[2]": {
+          "shape": [
+            1,
+            6,
+            9
+          ],
+          "min": -0.00824088603258133,
+          "max": 1.4057872295379639
+        },
+        "pose_enc_list[3]": {
+          "shape": [
+            1,
+            6,
+            9
+          ],
+          "min": -0.0037523293867707253,
+          "max": 1.4066886901855469
+        },
+        "depth": {
+          "shape": [
+            1,
+            6,
+            518,
+            518,
+            1
+          ],
+          "min": 0.3340391516685486,
+          "max": 1.0218796730041504
+        },
+        "depth_conf": {
+          "shape": [
+            1,
+            6,
+            518,
+            518
+          ],
+          "min": 1.0,
+          "max": 1.0367693901062012
+        },
+        "world_points": {
+          "shape": [
+            1,
+            6,
+            518,
+            518,
+            3
+          ],
+          "min": -0.46446120738983154,
+          "max": 0.856703519821167
+        },
+        "world_points_conf": {
+          "shape": [
+            1,
+            6,
+            518,
+            518
+          ],
+          "min": 1.0,
+          "max": 1.0049813985824585
+        },
+        "images": {
+          "shape": [
+            1,
+            6,
+            3,
+            518,
+            518
+          ],
+          "min": 3.189779818058014e-07,
+          "max": 0.9999999403953552
+        }
+      }
+    },
+    {
+      "frames": 4,
+      "resolution": 224,
+      "dtype": "torch.float32",
+      "ms": 473.5594309750013,
+      "outputs": {
+        "pose_enc": {
+          "shape": [
+            1,
+            4,
+            9
+          ],
+          "min": -0.015492366626858711,
+          "max": 1.3210233449935913
+        },
+        "pose_enc_list[0]": {
+          "shape": [
+            1,
+            4,
+            9
+          ],
+          "min": -0.005608860868960619,
+          "max": 1.3358231782913208
+        },
+        "pose_enc_list[1]": {
+          "shape": [
+            1,
+            4,
+            9
+          ],
+          "min": -0.01432093046605587,
+          "max": 1.3274738788604736
+        },
+        "pose_enc_list[2]": {
+          "shape": [
+            1,
+            4,
+            9
+          ],
+          "min": -0.015005229972302914,
+          "max": 1.3238743543624878
+        },
+        "pose_enc_list[3]": {
+          "shape": [
+            1,
+            4,
+            9
+          ],
+          "min": -0.015492366626858711,
+          "max": 1.3210233449935913
+        },
+        "depth": {
+          "shape": [
+            1,
+            4,
+            224,
+            224,
+            1
+          ],
+          "min": 0.5117233991622925,
+          "max": 0.845544695854187
+        },
+        "depth_conf": {
+          "shape": [
+            1,
+            4,
+            224,
+            224
+          ],
+          "min": 1.0000001192092896,
+          "max": 1.0670264959335327
+        },
+        "world_points": {
+          "shape": [
+            1,
+            4,
+            224,
+            224,
+            3
+          ],
+          "min": -0.31057289242744446,
+          "max": 0.7957838177680969
+        },
+        "world_points_conf": {
+          "shape": [
+            1,
+            4,
+            224,
+            224
+          ],
+          "min": 1.0,
+          "max": 1.0153475999832153
+        },
+        "images": {
+          "shape": [
+            1,
+            4,
+            3,
+            224,
+            224
+          ],
+          "min": 1.200241968035698e-06,
+          "max": 0.9999995231628418
+        }
+      }
+    }
+  ],
+  "camera": {
+    "orthogonal_max_abs": 5.960464477539063e-08,
+    "det_min": 0.9999998807907104,
+    "det_max": 1.0000001192092896
+  },
+  "identical_frames": {
+    "pose_std": 6.793947250116616e-05,
+    "depth_std": 0.003909268882125616
+  },
+  "real_images": {
+    "paths": [
+      "examples/kitchen/images/00.png",
+      "examples/kitchen/images/01.png",
+      "examples/kitchen/images/02.png",
+      "examples/kitchen/images/03.png"
+    ],
+    "shape": [
+      4,
+      3,
+      350,
+      518
+    ]
+  },
+  "fp32_bf16_relative_l2": {
+    "pose_enc": 0.0012397633399814367,
+    "depth": 0.014060712419450283,
+    "world_points": 0.020050739869475365
+  },
+  "attention_ops": [
+    "aten::scaled_dot_product_attention",
+    "aten::_scaled_dot_product_flash_attention",
+    "aten::_flash_attention_forward",
+    "aten::_scaled_dot_product_attention_math"
+  ],
+  "repeatability_max_abs": {
+    "pose_enc": 0.0,
+    "depth": 0.0,
+    "depth_conf": 0.0,
+    "world_points": 0.0,
+    "world_points_conf": 0.0,
+    "images": 0.0
+  },
+  "scope": "Finiteness, pose legality, self consistency, real-image smoke; no dataset accuracy GT"
+}
