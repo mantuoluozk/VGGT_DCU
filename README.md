@@ -11,7 +11,7 @@
 | 服务器型号 | X7850H0 |
 | CPU | 2 × 海光 C86-4G（7490），合计 128 核、256 逻辑线程 |
 | 系统内存 | 约 751 GiB |
-| 加速卡 | 8 × 海光 BW100，单卡为 64GB 级显存 |
+| 加速卡 | 8 × 海光 BW100，单卡显存 64GB |
 | 操作系统 | Ubuntu 22.04.5 LTS |
 | 开发工具包 | DTK 26.04 |
 | Python | 3.10.12 |
@@ -93,20 +93,79 @@ docker run -d --name zk-vggt \
 
 ### 准备模型代码与参数
 
-进入容器和项目目录，执行：
+需要准备两项内容：**VGGT 模型代码**用于构建和运行模型，**预训练参数 `model.pt`**用于加载官方已经训练好的模型。下面的命令均在容器内、本项目根目录执行。
+
+**第一步：进入容器并安装辅助依赖。**
 
 ```bash
 docker exec -it zk-vggt bash
 cd /home/zk/vggt/validation-project
 
 python -m pip install -r requirements-extra.txt
-python scripts/prepare_source.py
-python scripts/download_checkpoint.py
 ```
 
-模型代码下载到 `vendor/vggt`，预训练参数下载到 `checkpoints/model.pt`。模型代码固定在提交 `a288dd0f14786c93483e45524328726ab7b1b4ce`；参数文件为 `facebook/VGGT-1B` 的 `model.pt`。下载服务可通过 `HF_ENDPOINT`、`HF_TOKEN` 环境变量配置。
+**第二步：下载官方模型代码。**
 
-也可在运行命令中用 `--source`、`--checkpoint` 指向已准备好的模型代码和参数文件。
+```bash
+python scripts/prepare_source.py --destination vendor/vggt
+```
+
+脚本自动获取 VGGT 官方代码，并固定到本次测试使用的版本 `a288dd0f14786c93483e45524328726ab7b1b4ce`。代码保存在 `vendor/vggt`，其中包括模型实现、训练误差计算方法和示例图片。此步骤需要网络连接及 `git` 命令，测试镜像已提供 `git`。
+
+**第三步：下载预训练参数。**
+
+```bash
+python scripts/download_checkpoint.py --destination checkpoints/model.pt
+```
+
+脚本从 [VGGT-1B 官方模型文件页面](https://huggingface.co/facebook/VGGT-1B/tree/main) 下载 `model.pt`，文件约 5GB，保存在 `checkpoints/model.pt`。本项目使用的是 `model.pt` 文件。
+
+也可以从上述页面手动下载 `model.pt`，或使用下面的命令，然后放到同一位置：
+
+```bash
+mkdir -p checkpoints
+curl -L --fail --retry 3 -C - \
+  https://huggingface.co/facebook/VGGT-1B/resolve/main/model.pt \
+  -o checkpoints/model.pt
+```
+
+**第四步：确认文件位置。**
+
+准备完成后，主要目录应如下所示：
+
+```text
+validation-project/
+├── scripts/                          # 本项目的测试脚本
+├── vendor/vggt/
+│   ├── vggt/models/vggt.py            # 模型代码
+│   ├── training/loss.py              # 训练误差计算代码
+│   └── examples/kitchen/images/      # 示例图片
+└── checkpoints/model.pt              # 官方预训练参数，约 5GB
+```
+
+可用以下命令检查关键文件是否存在：
+
+```bash
+ls -lh vendor/vggt/vggt/models/vggt.py \
+  vendor/vggt/training/loss.py checkpoints/model.pt
+```
+
+如需核对是否与本次实验使用相同参数文件，可运行 `sha256sum checkpoints/model.pt`，本次实验记录的校验值为：
+
+```text
+d15bf50a8615c8225ed48b51ea5cac673d82442ec0309036df555a053253afe0
+```
+
+服务器无法联网时，可在可联网的机器上完成下载，再将整个模型代码目录和 `model.pt` 复制到服务器的对应位置。下载脚本也支持通过 `HF_ENDPOINT` 设置模型下载服务地址，通过 `HF_TOKEN` 配置需要登录时使用的访问凭据。
+
+模型代码和参数位于其他目录时，可直接通过 `--source`、`--checkpoint` 指定，无需再次下载。例如本次测试服务器上已有的路径可这样使用：
+
+```bash
+python -u scripts/run_suite.py \
+  --source /home/zk/vggt/vggt \
+  --checkpoint /home/zk/vggt/vggt_ckpt/model.pt \
+  --output results/my_run
+```
 
 ## 4. 一键测试
 
