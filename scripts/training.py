@@ -1,4 +1,5 @@
 """Phases 5-6: real MultitaskLoss, optimizer updates and DDP synchronization checks."""
+import argparse
 import os
 import time
 from datetime import timedelta
@@ -13,6 +14,11 @@ p = parser("VGGT single-card / DDP training graph validation")
 p.add_argument("--ddp", action="store_true")
 p.add_argument("--steps", type=int, default=3)
 p.add_argument("--frames", type=int, default=6)
+p.add_argument("--initial-scale", type=float, default=65536.0)
+p.add_argument("--anomaly", action="store_true")
+p.add_argument("--init-threads", type=int, default=1)
+p.add_argument("--contiguous-qkv", action=argparse.BooleanOptionalAction, default=True,
+               help="Materialize Q/K/V before SDPA to avoid non-contiguous Flash backward NaNs")
 p.add_argument("--backend", choices=["flash", "auto"], default="flash")
 args = p.parse_args()
 rank = int(os.getenv("RANK", "0"))
@@ -20,22 +26,29 @@ local_rank = int(os.getenv("LOCAL_RANK", "0"))
 world = int(os.getenv("WORLD_SIZE", "1"))
 torch.cuda.set_device(local_rank)
 setup(args)
+torch.autograd.set_detect_anomaly(args.anomaly)
 if args.ddp:
     assert world == 8, "This acceptance test requires eight ranks"
     dist.init_process_group("nccl", timeout=timedelta(minutes=15))
 
 from loss import MultitaskLoss
 
+print(f"rank {rank}: build model", flush=True)
+# The image can crash in CPU trunc_normal_/erfinv with concurrent multi-threaded rank initialization.
+torch.set_num_threads(args.init_threads)
 model = build(args, training=True)
+torch.set_num_threads(args.threads)
 core = model
 if args.ddp:
+    print(f"rank {rank}: construct DDP", flush=True)
     model = DistributedDataParallel(model, device_ids=[local_rank], find_unused_parameters=False,
                                     gradient_as_bucket_view=True)
 loss_fn = MultitaskLoss(camera={"weight": 5.0, "loss_type": "l1"},
                        depth={"weight": 1.0, "gradient_loss_fn": "grad", "valid_range": 0.98},
                        point=None, track=None)
-optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5, weight_decay=0.05)
-scaler = torch.amp.GradScaler("cuda", enabled=True)
+learning_rate, weight_decay = (1e-4, 0.01) if args.ddp else (5e-5, 0.05)
+optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+scaler = torch.amp.GradScaler("cuda", enabled=True, init_scale=args.initial_scale)
 
 # Distinct data per rank, unlike customer script. Parameter initialization remains synchronized by DDP.
 torch.manual_seed(100 + rank)
@@ -55,6 +68,9 @@ if args.ddp:
     dist.all_reduce(sentinel)
 assert sentinel.item() == world * (world + 1) / 2
 data = {"status": "PASS", "rank": rank, "world_size": world, "frames": S, "resolution": H,
+        "contiguous_qkv": args.contiguous_qkv, "initial_loss_scale": args.initial_scale,
+        "optimizer": {"name": "AdamW", "lr": learning_rate, "weight_decay": weight_decay},
+        "model_init_threads": args.init_threads, "compute_threads": args.threads,
         "backend": args.backend, "all_reduce_sentinel": sentinel.item(), "steps": [],
         "sync_scope": "257 evenly spaced elements from EVERY trainable parameter/gradient; exact all-rank comparison",
         "training_scope": "Random weights, synthetic GT, all aggregator parameters trainable; no full dataset training"}
@@ -90,7 +106,7 @@ for step in range(args.steps):
     before = signature().clone()
     torch.cuda.synchronize()
     start = time.perf_counter()
-    with backend_scope(core, args.backend):
+    with backend_scope(core, args.backend, contiguous_qkv=args.contiguous_qkv):
         with torch.autocast("cuda", dtype=torch.bfloat16):
             predictions = model(images=images)
             output_stats(predictions)
@@ -100,8 +116,14 @@ for step in range(args.steps):
         scaler.scale(loss).backward()
     scaler.unscale_(optimizer)
     # All gradients checked for finiteness; sampling only concerns cross-rank equality.
-    finite = torch.stack([torch.isfinite(parameter.grad).all() for _, parameter in parameters if parameter.grad is not None]).all()
-    assert finite, "Nonfinite gradient"
+    checks = [(name, torch.isfinite(parameter.grad).all()) for name, parameter in parameters if parameter.grad is not None]
+    finite = torch.stack([flag for _, flag in checks]).tolist()
+    bad = [name for (name, _), flag in zip(checks, finite) if not flag]
+    if bad:
+        save(args, f"training_failure_rank{rank}", {"status": "FAIL", "step": step, "bad_gradients": bad,
+             "loss": loss.item(), "scale": scaler.get_scale(),
+             "loss_components": {name: value.detach().item() for name, value in losses.items()}})
+        raise AssertionError(f"Nonfinite gradients in {len(bad)} parameters; see failure JSON")
     gradient_sample = signature(gradients=True)
     assert gradient_sample.abs().max() > 0, "Zero gradients"
     gradient_error = equality_error(gradient_sample)

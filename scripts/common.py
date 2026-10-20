@@ -65,7 +65,7 @@ def build(args, training=False, weights=False):
 
 
 @contextlib.contextmanager
-def backend_scope(model, backend):
+def backend_scope(model, backend, contiguous_qkv=False):
     """Force only aggregator Flash: original FP32 camera head still needs MATH."""
     if backend == "auto":
         yield
@@ -75,6 +75,13 @@ def backend_scope(model, backend):
             yield
         return
     originals = []
+    import torch.nn.functional as functional
+    original_sdpa = functional.scaled_dot_product_attention
+
+    if contiguous_qkv:
+        def sdpa(q, k, v, *args, **kwargs):
+            return original_sdpa(q.contiguous(), k.contiguous(), v.contiguous(), *args, **kwargs)
+        functional.scaled_dot_product_attention = sdpa
 
     def wrap(original):
         def forward(*args, **kwargs):
@@ -94,6 +101,7 @@ def backend_scope(model, backend):
     finally:
         for module, original in originals:
             module.forward = original
+        functional.scaled_dot_product_attention = original_sdpa
 
 
 def output_stats(predictions):

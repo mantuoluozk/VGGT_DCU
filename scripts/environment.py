@@ -2,6 +2,7 @@ import importlib.metadata
 import platform
 from pathlib import Path
 
+import flash_attn
 import torch
 import torchvision
 
@@ -11,6 +12,8 @@ args = parser("Phase 1: capture DCU environment and artifact identities").parse_
 setup(args)
 data = {
     "status": "PASS", "python": platform.python_version(), "torch": torch.__version__,
+    "platform": platform.platform(), "torch_build_config": torch.__config__.show(),
+    "module_paths": {"torch": torch.__file__, "torchvision": torchvision.__file__, "flash_attn": flash_attn.__file__},
     "torchvision": torchvision.__version__, "hip": torch.version.hip,
     "packages": {d.metadata["Name"]: d.version for d in importlib.metadata.distributions() if d.metadata["Name"]},
     "source_commit": command("git", "-C", str(args.source), "rev-parse", "HEAD"),

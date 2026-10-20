@@ -20,6 +20,8 @@ args.output.mkdir(parents=True, exist_ok=True)
 env = os.environ.copy()
 env.update(VGGT_SOURCE=str(args.source.resolve()), VGGT_CHECKPOINT=str(args.checkpoint.resolve()),
            VGGT_OUTPUT=str(args.output), OMP_NUM_THREADS="8", MKL_NUM_THREADS="8", PYTHONUNBUFFERED="1")
+env.setdefault("NCCL_SOCKET_IFNAME", "lo")
+env["PYTHONFAULTHANDLER"] = "1"
 base = [sys.executable, "-u"]
 jobs = {
     "environment": base + [str(ROOT / "scripts/environment.py")],

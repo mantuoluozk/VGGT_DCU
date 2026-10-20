@@ -91,6 +91,7 @@ export VGGT_SOURCE=/home/zk/vggt/vggt
 export VGGT_CHECKPOINT=/home/zk/vggt/vggt_ckpt/model.pt
 export VGGT_OUTPUT=$PWD/results/manual
 export OMP_NUM_THREADS=8 MKL_NUM_THREADS=8
+export NCCL_SOCKET_IFNAME=lo PYTHONFAULTHANDLER=1
 
 python scripts/environment.py
 python scripts/flash.py
@@ -110,7 +111,17 @@ python scripts/run_suite.py --source "$VGGT_SOURCE" \
   --phases training ddp
 ```
 
-相同输出目录的同名阶段会覆盖日志和 JSON，manifest 更新对应记录。正式复测建议新目录保留历史。DDP 各 rank 使用不同随机输入；检查全部参数梯度的有限性，并在清空梯度前，对每个可训练张量最多 257 个等距样本做跨卡一致性验证，优化后同样检查参数样本一致性及更新。采样同步检查不等同于全张量逐元素校验。训练用 BF16 autocast + GradScaler，检查优化步未被跳过。
+相同输出目录的同名阶段会覆盖日志和 JSON，manifest 更新对应记录。正式复测建议新目录保留历史。DDP 各 rank 使用不同随机输入；检查全部参数梯度的有限性，并在清空梯度前，对每个可训练张量最多 257 个等距样本做跨卡一致性验证，优化后同样检查参数样本一致性及更新。采样同步检查不等同于全张量逐元素校验。训练用 BF16 autocast + GradScaler（初始 scale=65536），检查优化步未被跳过。单卡 AdamW 使用 lr=5e-5、weight_decay=0.05；DDP 按客户脚本使用 lr=1e-4、weight_decay=0.01。
+
+### 本镜像的训练兼容处理
+
+复测中，原生 Q/K/V 布局的 Flash 反向在 VGGT 训练中返回 NaN；降低 loss scale 后仍可复现，独立的连续张量 Flash 算子测试则正常。训练脚本默认在进入 SDPA 前执行 `q.contiguous()`、`k.contiguous()`、`v.contiguous()`，保持 Flash 后端和模型数值精度。处理仅在测试脚本的上下文内生效，不修改上游源码；也覆盖激活检查点的反向重计算。推理基准未启用这项训练处理。
+
+可用 `--no-contiguous-qkv` 重现原始布局路径；`--anomaly` 开启反向异常定位。原始失败与诊断证据随正式结果保存。此处仅报告当前镜像和模型组合的实测现象，不泛化为所有 Flash 实现的限制。
+
+八卡启动还曾在并行构建模型时的 CPU `trunc_normal_/erfinv` 出现 SIGSEGV。脚本默认使用 1 个 CPU 线程完成模型初始化，随后恢复 8 线程计算，完整八卡测试已通过；可通过 `--init-threads` 调整。该处理仅改变初始化线程数，未更改初始化函数或冻结模型参数。
+
+统一入口默认设置 `NCCL_SOCKET_IFNAME=lo`（与客户单机 DDP 命令一致）和 `PYTHONFAULTHANDLER=1`，外部已设置的网卡值会保留。还提供 `diagnose_flash.py` 与 `distributed_probe.py`，分别用于最小 Flash 形状／梯度和八卡通信诊断。
 
 ## 5. 验收边界
 
