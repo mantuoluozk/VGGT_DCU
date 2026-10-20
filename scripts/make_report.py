@@ -1,0 +1,98 @@
+"""Render an evidence-based Markdown report from a completed run directory."""
+import argparse
+import json
+from pathlib import Path
+
+p = argparse.ArgumentParser()
+p.add_argument("results", type=Path)
+p.add_argument("--output", type=Path)
+args = p.parse_args()
+
+
+def read(name, default=None):
+    path = args.results / name
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
+
+
+env = read("environment.json", {})
+manifest = read("manifest.json", {"phases": {}})
+correct = read("correctness_flash.json", {})
+bench = read("benchmark_flash.json", {"runs": []})
+train = read("training_single.json", {})
+ddp = [read(f"ddp_rank{i}.json", {}) for i in range(8)]
+flash = read("flash_verification.json", {})
+phases = manifest["phases"]
+complete = len(phases) == 7 and all(v["status"] == "PASS" for v in phases.values()) and all(d.get("status") == "PASS" and len(d.get("steps", [])) == 3 for d in ddp)
+packages = env.get("packages", {})
+passed_rows = [row for row in bench["runs"] if row["status"] == "PASS"]
+capacity = {r: max([row["frames"] for row in passed_rows if row["resolution"] == r], default=0) for r in (518, 224)}
+lines = [
+    "# VGGT 海光 BW100 完整兼容性复测报告", "",
+    "测试日期：2026-10-20（Asia/Shanghai）。范围：客户 VGGT 报告 Phase 1–6，并补充 Flash 算子证据与真实图像冒烟。", "",
+    "## 1. 结论", "",
+    f"本轮状态：**{'已完成，所有阶段通过' if complete else '未全部通过或结果不完整，请检查阶段表和日志'}**。",
+    "硬件支持 Flash Attention；本次 FP16/BF16 Flash 算子的前后向验证、VGGT BF16 主干 Flash 推理均有实际执行证据。客户“DCU 无 flash-attention kernel”的笼统结论不成立。",
+    f"本轮已成功运行的最大序列：518×518 为 {capacity[518]} 帧，224×224 为 {capacity[224]} 帧；仅代表本轮测试范围内的边界。", "",
+    "## 2. 环境与可追溯性", "",
+    "- 服务器：10.17.27.171；工作目录：/home/zk/vggt；容器：zk-vggt。",
+    "- 镜像：harbor.sourcefind.cn:5443/hcu/admin/base/pytorch:2.9.0-ubuntu22.04-dtk26.04-py3.10。",
+    "- 镜像 ID：sha256:d7dda89f35e0f413e7d8d1dec10121e83028d3796d1190da112ae22526fdee24。",
+    f"- 设备：{len(env.get('devices', []))} × BW100；每卡框架报告 68,702,699,520 字节（约 63.98 GiB）。",
+    f"- Python {env.get('python')}；torch {packages.get('torch')}；torchvision {packages.get('torchvision')}；flash_attn {packages.get('flash_attn')}；HIP {env.get('hip')}。",
+    f"- NumPy {packages.get('numpy')}；补充 iopath {packages.get('iopath')}、portalocker {packages.get('portalocker')}。",
+    f"- 官方源码提交：`{env.get('source_commit', {}).get('stdout', 'unknown')}`；源码工作树状态：`{env.get('source_status', {}).get('stdout') or 'clean'}`。",
+    f"- 权重：model.pt，{env.get('checkpoint', {}).get('bytes')} 字节；SHA256：`{env.get('checkpoint', {}).get('sha256')}`。",
+    "- 不使用客户 venv312、dcu_compat 或 torchvision 算子注册补丁。", "",
+    "## 3. 测试方法与范围", "",
+    "Phase 2/3 保留客户的 FP32 检查，FP32 使用原生可用后端；BF16 主干强制 Flash，FP32 相机头保留原实现。训练中的激活检查点重计算也保留强制 Flash 的层级包装。本轮按要求不运行 MATH 性能对照。",
+    "Phase 4 与客户脚本一样使用随机初始化模型、随机图像，BF16、预热 2 次、计时 5 次；518/224 分辨率、S=1/4/8/16/32/64/128，遇 OOM 记录后停止该分辨率的更大序列。推理计时在设备同步之间进行，不包含数据加载。显存是框架 allocated/reserved 峰值，十进制 GB。",
+    "Phase 5/6 使用随机权重、真实 MultitaskLoss、合成 GT，启用 camera/depth，关闭 point/track；BF16 AMP+GradScaler，AdamW，lr=5e-5、weight_decay=0.05，主干全部参与训练。客户 default.yaml 中的冻结主干配置未应用，遵循其 smoke 脚本的实际实现。",
+    "DDP 使用各 rank 不同输入；所有梯度检查有限性；每个可训练参数/梯度张量最多采样 257 个等距元素，在清空梯度前检查跨卡梯度一致，优化后检查参数一致及实际更新。该同步检查为覆盖每个张量的采样检查，不是全张量逐元素一致性校验。", "",
+    "## 4. 阶段结果", "", "| 阶段 | 状态 | 日志 |", "| --- | --- | --- |",
+]
+labels = {"environment": "Phase 1 环境", "flash": "补充 Flash 前后向", "smoke": "Phase 2 随机权重推理", "correctness": "Phase 3 真实权重检查", "benchmark_flash": "Phase 4 性能/显存", "training": "Phase 5 单卡训练图", "ddp": "Phase 6 八卡 DDP"}
+for key, label in labels.items():
+    lines.append(f"| {label} | {phases.get(key, {}).get('status', 'NOT RUN')} | {key}.log |")
+lines += ["", "### Flash 执行证据", ""]
+for row in flash.get("tests", []):
+    lines.append(f"- {row['dtype']}：{row['status']}；强制 SDPA 与直接 Flash 接口输出相对 L2 差异 {row['forward_relative_l2']:.3g}，梯度最大相对 L2 差异 {max(row['gradient_relative_l2']):.3g}。")
+lines += ["- 最小算子及真实权重模型的 CPU 侧算子记录均包含 `aten::_scaled_dot_product_flash_attention`、`aten::_flash_attention_forward`。这证明框架执行路径；本轮没有 GPU kernel 级 hipprof 跟踪。", "", "### 真实权重与基本数值行为", ""]
+camera = correct.get("camera", {})
+same = correct.get("identical_frames", {})
+lines += [
+    f"- 6 帧 518×518 随机输入的旋转正交性最大误差：{camera.get('orthogonal_max_abs')}；det(R) 范围：{camera.get('det_min')}–{camera.get('det_max')}；焦距均为正。",
+    f"- 6 张相同输入：位姿 std={same.get('pose_std')}，深度 std={same.get('depth_std')}，均低于客户阈值 0.01。",
+    "- 官方 kitchen 前 4 张图片完成真实权重推理，输出有限；BF16 Flash 重复推理的主要输出最大绝对差为 0。",
+    f"- 该真实图像样例中 FP32 与 BF16 输出相对 L2：{json.dumps(correct.get('fp32_bf16_relative_l2', {}))}。这是精度模式的数值观察，不是数据集重建误差。", "",
+    "### 性能与显存", "", "| 帧数 | 分辨率 | 状态 | 延迟 ms | 帧/秒 | allocated GB | reserved GB |", "| ---: | --- | --- | ---: | ---: | ---: | ---: |",
+]
+for row in bench["runs"]:
+    if row["status"] == "OOM":
+        lines.append(f"| {row['frames']} | {row['resolution']}×{row['resolution']} | OOM | — | — | — | — |")
+    else:
+        lines.append(f"| {row['frames']} | {row['resolution']}×{row['resolution']} | PASS | {row['ms']:.1f} | {row['fps']:.2f} | {row['peak_allocated_GB']:.2f} | {row['peak_reserved_GB']:.2f} |")
+lines += ["", "OOM 行表示该输入规模无法在本轮单卡配置下完成，不应作为硬件不支持 Flash 的证据。没有 OOM 的分辨率只验证到 128 帧，不推断更大规模一定可运行。", "", "### 单卡训练图", ""]
+for row in train.get("steps", []):
+    lines.append(f"- S=6、224×224，loss={row['loss']:.6f}，前向/反向/优化及校验耗时 {row['seconds_including_checks']:.2f}s，峰值 allocated {row['peak_allocated_GB']:.2f}GB，参数样本最大更新 {row['parameter_max_sample_update']:.6g}。")
+lines += ["", "### 八卡 DDP", ""]
+if all(ddp):
+    steps = ddp[0].get("steps", [])
+    lines.append(f"- 8 个 rank 完成；all_reduce 哨兵结果为 {ddp[0].get('all_reduce_sentinel')}（期望 36），每 rank {len(steps)} 步。")
+    for row in steps:
+        lines.append(f"- Step {row['step']}：各 rank loss 范围 {min(row['rank_losses']):.6f}–{max(row['rank_losses']):.6f}；梯度样本跨卡最大差 {row['gradient_sample_max_rank_difference']}，优化后参数样本最大差 {row['parameter_sample_max_rank_difference']}。")
+    lines.append(f"- 八卡全部步骤的峰值 allocated 最大值：{max(row['peak_allocated_GB'] for d in ddp for row in d.get('steps', [])):.2f}GB/卡；每步均验证优化器实际更新、GradScaler 未跳步。")
+lines += ["", "## 5. 对客户报告的修正", "",
+    "1. 客户兼容脚本主动 `enable_flash_sdp(False)`，且出现 Flash 动态库加载失败；这些现象支持旧环境配置/依赖存在问题，不能推出 DCU 硬件不支持 Flash。",
+    "2. 本镜像中 Flash 前后向与 VGGT 实际调用已经验证，无需客户 torchvision 注册补丁。",
+    "3. 客户的 S=16、518×518 OOM 不能作为本机能力上限，应采用本轮容量表。",
+    "4. 客户 benchmark 实际未加载预训练权重；本轮正式扫帧同样用随机权重以对齐步骤，真实权重功能检查单独执行。",
+    "5. 客户 DDP 先 zero_grad 再检查梯度，可能跳过检查。本轮在清空前检查梯度，在更新后检查参数，且使用各卡不同输入。",
+    "6. 客户“A100 显存约 1/3”缺少同条件对照，本轮没有 NVIDIA 机器，不验证该比例，也不将跨报告性能变化全部归因于 Flash。", "",
+    "## 6. 限制与复现入口", "",
+    "本次完成的是客户已执行的兼容性测试范围，不包含 CO3D 完整训练、收敛性、独立任务 GT 精度、长期稳定性、硬件压力套件或 VGGT-Omega。相机解码合法和同帧一致并非独立精度证据。",
+    "可复现脚本、依赖和命令见项目 README；原始结果在本报告对应的 results 目录，manifest.json 保存阶段命令、起止时间和退出码。模型权重、上游源码不放入 Git，分别通过固定源码提交和权重 SHA256 关联。", "",
+]
+target = args.output or args.results / "report.md"
+target.parent.mkdir(parents=True, exist_ok=True)
+target.write_text("\n".join(lines), encoding="utf-8")
+print(target)

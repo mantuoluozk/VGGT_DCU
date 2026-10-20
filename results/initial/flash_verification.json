@@ -1,0 +1,86 @@
+{
+  "torch": "2.9.0",
+  "hip": "6.3.26045",
+  "devices": [
+    {
+      "index": 0,
+      "name": "BW100",
+      "memory_bytes": 68702699520
+    },
+    {
+      "index": 1,
+      "name": "BW100",
+      "memory_bytes": 68702699520
+    },
+    {
+      "index": 2,
+      "name": "BW100",
+      "memory_bytes": 68702699520
+    },
+    {
+      "index": 3,
+      "name": "BW100",
+      "memory_bytes": 68702699520
+    },
+    {
+      "index": 4,
+      "name": "BW100",
+      "memory_bytes": 68702699520
+    },
+    {
+      "index": 5,
+      "name": "BW100",
+      "memory_bytes": 68702699520
+    },
+    {
+      "index": 6,
+      "name": "BW100",
+      "memory_bytes": 68702699520
+    },
+    {
+      "index": 7,
+      "name": "BW100",
+      "memory_bytes": 68702699520
+    }
+  ],
+  "tests": [
+    {
+      "dtype": "torch.float16",
+      "forward_max_abs": 0.000244140625,
+      "forward_relative_l2": 0.0004972877795808017,
+      "gradient_relative_l2": [
+        0.000525598821695894,
+        0.0005234483978711069,
+        0.0005247491062618792
+      ],
+      "sdpa_ops": [
+        "aten::scaled_dot_product_attention",
+        "aten::_scaled_dot_product_flash_attention",
+        "aten::_flash_attention_forward"
+      ],
+      "forced_flash_sdpa": "PASS",
+      "flash_attn_version": "2.6.1",
+      "direct_relative_l2": 0.0004972878377884626,
+      "direct_flash_attn": "PASS"
+    },
+    {
+      "dtype": "torch.bfloat16",
+      "forward_max_abs": 0.00390625,
+      "forward_relative_l2": 0.005977488588541746,
+      "gradient_relative_l2": [
+        0.006229001097381115,
+        0.006227073259651661,
+        0.006263617426156998
+      ],
+      "sdpa_ops": [
+        "aten::scaled_dot_product_attention",
+        "aten::_scaled_dot_product_flash_attention",
+        "aten::_flash_attention_forward"
+      ],
+      "forced_flash_sdpa": "PASS",
+      "flash_attn_version": "2.6.1",
+      "direct_relative_l2": 0.005977488588541746,
+      "direct_flash_attn": "PASS"
+    }
+  ]
+}

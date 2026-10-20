@@ -1,0 +1,105 @@
+{
+  "torch": "2.9.0",
+  "dtype": "bf16",
+  "checkpoint": "/home/zk/vggt/vggt_ckpt/model.pt",
+  "runs": [
+    {
+      "frames": 1,
+      "resolution": 518,
+      "ms": 187.99629632849246,
+      "fps": 5.319253727491872,
+      "peak_allocated_GB": 7.563180032,
+      "peak_reserved_GB": 8.338276352
+    },
+    {
+      "frames": 4,
+      "resolution": 518,
+      "ms": 533.1249903344238,
+      "fps": 7.502930968384808,
+      "peak_allocated_GB": 8.337865728,
+      "peak_reserved_GB": 9.076473856
+    },
+    {
+      "frames": 8,
+      "resolution": 518,
+      "ms": 1024.059764012539,
+      "fps": 7.812044063379532,
+      "peak_allocated_GB": 9.644423168,
+      "peak_reserved_GB": 11.23024896
+    },
+    {
+      "frames": 16,
+      "resolution": 518,
+      "ms": 2218.0309106673426,
+      "fps": 7.213605510658124,
+      "peak_allocated_GB": 10.077321728,
+      "peak_reserved_GB": 13.319012352
+    }
+  ],
+  "backend_scope": "Force aggregator only; original FP32 camera head may use MATH",
+  "forced_flash_ops": [
+    "aten::scaled_dot_product_attention",
+    "aten::_scaled_dot_product_flash_attention",
+    "aten::_flash_attention_forward",
+    "aten::_scaled_dot_product_attention_math"
+  ],
+  "backend_agreement": {
+    "pose_enc": {
+      "shape": [
+        1,
+        2,
+        9
+      ],
+      "max_abs": 0.001465916633605957,
+      "relative_l2": 0.0007290334906429052
+    },
+    "depth": {
+      "shape": [
+        1,
+        2,
+        224,
+        224,
+        1
+      ],
+      "max_abs": 0.002367675304412842,
+      "relative_l2": 0.0014951450284570456
+    },
+    "depth_conf": {
+      "shape": [
+        1,
+        2,
+        224,
+        224
+      ],
+      "max_abs": 0.0023140907287597656,
+      "relative_l2": 1.5153058484429494e-05
+    },
+    "world_points": {
+      "shape": [
+        1,
+        2,
+        224,
+        224,
+        3
+      ],
+      "max_abs": 0.0029096677899360657,
+      "relative_l2": 0.0021597223822027445
+    },
+    "world_points_conf": {
+      "shape": [
+        1,
+        2,
+        224,
+        224
+      ],
+      "max_abs": 0.0007374286651611328,
+      "relative_l2": 2.971722096845042e-05
+    }
+  },
+  "automatic_ops": [
+    "aten::scaled_dot_product_attention",
+    "aten::_scaled_dot_product_flash_attention",
+    "aten::_flash_attention_forward",
+    "aten::_scaled_dot_product_attention_math"
+  ]
+}

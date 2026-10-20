@@ -1,0 +1,1 @@
+harbor.sourcefind.cn:5443/hcu/admin/base/pytorch:2.9.0-ubuntu22.04-dtk26.04-py3.10 sha256:d7dda89f35e0f413e7d8d1dec10121e83028d3796d1190da112ae22526fdee24

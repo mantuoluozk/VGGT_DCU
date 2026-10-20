@@ -1,0 +1,43 @@
+Name: torch
+Version: 2.9.0+das.opt1.dtk2604.20260206.g275d08c2
+Summary: Tensors and Dynamic neural networks in Python with strong GPU acceleration
+Home-page: https://pytorch.org
+Author: 
+Author-email: PyTorch Team <packages@pytorch.org>
+License: BSD-3-Clause
+Location: /usr/local/lib/python3.10/dist-packages
+Requires: cloudpickle, filelock, fsspec, jinja2, networkx, sympy, typing-extensions
+Required-by: accelerate, compressed-tensors, flash_attn, lightop, lmslim, peft, runai-model-streamer, tensorizer, timm, torchdata, torchvision, vllm, xgrammar
+---
+Name: torchvision
+Version: 0.24.0+das.opt1.dtk2604.20260210.gf0277aff
+Summary: image and video datasets and models for torch deep learning
+Home-page: https://github.com/pytorch/vision
+Author: PyTorch Core Team
+Author-email: soumith@pytorch.org
+License: BSD
+Location: /usr/local/lib/python3.10/dist-packages
+Requires: numpy, pillow, torch
+Required-by: timm, vllm
+---
+Name: flash_attn
+Version: 2.6.1+das.opt1.dtk2604.torch291.20260210.g7808665e
+Summary: Flash Attention: Fast and Memory-Efficient Exact Attention
+Home-page: https://github.com/Dao-AILab/flash-attention
+Author: Tri Dao
+Author-email: tri@tridao.me
+License: 
+Location: /usr/local/lib/python3.10/dist-packages
+Requires: einops, torch
+Required-by: vllm
+---
+Name: numpy
+Version: 1.25.0
+Summary: Fundamental package for array computing in Python
+Home-page: https://www.numpy.org
+Author: Travis E. Oliphant et al.
+Author-email: 
+License: BSD-3-Clause
+Location: /usr/local/lib/python3.10/dist-packages
+Requires: 
+Required-by: accelerate, contourpy, cupy, cupy-cuda12x, datasets, gguf, lmslim, matplotlib, mistral_common, numba, opencv-python-headless, pandas, peft, runai-model-streamer, scipy, tensorboardX, tensorizer, torchvision, transformers, vllm, xgrammar
