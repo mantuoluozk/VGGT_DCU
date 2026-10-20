@@ -4,6 +4,8 @@
 
 本次交付：[完整测试报告](reports/VGGT_DCU_完整测试报告_20261020.md)、[原始结果与日志](results/20261020_flash/)、[客户原报告](references/VGGT_海光DCU_验证报告与Runbook.md)。
 
+代码仓库：[光源 GitLab](https://developer.sourcefind.cn/codes/zhengke/vggt_dcu)、[GitHub](https://github.com/mantuoluozk/VGGT_DCU)。
+
 本轮使用 Flash Attention。BF16 主干强制 `SDPBackend.FLASH_ATTENTION`，失败即报错，不允许主干静默回退。VGGT 原代码的相机头以 FP32 运行，保留其 MATH 注意力；客户步骤中的 FP32 冒烟与自一致性检查也保留。这两点不属于 MATH 性能对照。
 
 ## 1. 环境
