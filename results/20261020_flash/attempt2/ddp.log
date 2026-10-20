@@ -1,0 +1,104 @@
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1020 12:21:02.819042 20560 ProcessGroupNCCL.cpp:1671] [PG ID 0 PG GUID 0 Rank 5] HeartbeatMonitor environments: TORCH_NCCL_ENABLE_MONITORING (Whether to kill program when no watchdog heartbeat detected): 1, TORCH_NCCL_DUMP_ON_TIMEOUT: 1, TORCH_NCCL_WAIT_TIMEOUT_DUMP_MILSEC: 15000, TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC: 480, TORCH_NCCL_COORD_CHECK_MILSEC: 1000, TORCH_NCCL_LOG_CPP_STACK_ON_UNCLEAN_SHUTDOWN: 1
+I1020 12:21:02.819108 20560 ProcessGroupNCCL.cpp:2000] [PG ID 0 PG GUID 0 Rank 5] PGNCCL Watchdog environments: TORCH_NCCL_RETHROW_CUDA_ERRORS: 1, TORCH_NCCL_PROPAGATE_ERROR: 0, TORCH_NCCL_DESYNC_DEBUG: 0
+I1020 12:21:02.819289 20560 ProcessGroupNCCL.cpp:980] [PG ID 0 PG GUID 0 Rank 5] ProcessGroupNCCL initialization options: size: 8, global rank: 5, TIMEOUT(ms): 900000, USE_HIGH_PRIORITY_STREAM: 0, SPLIT_FROM: 0, SPLIT_COLOR: -2, PG Name: 0
+I1020 12:21:02.819296 20560 ProcessGroupNCCL.cpp:990] [PG ID 0 PG GUID 0 Rank 5] ProcessGroupNCCL environments: NCCL version: 2.22.3, TORCH_NCCL_ASYNC_ERROR_HANDLING: 1, TORCH_NCCL_ENABLE_TIMING: 0, TORCH_NCCL_BLOCKING_WAIT: 0, TORCH_DISTRIBUTED_DEBUG: OFF, TORCH_NCCL_USE_TENSOR_REGISTER_ALLOCATOR_HOOK: 0, TORCH_NCCL_TRACE_BUFFER_SIZE: 2000, TORCH_NCCL_NAN_CHECK: 0, TORCH_NCCL_CUDA_EVENT_CACHE: 1
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1020 12:21:02.825615 20559 ProcessGroupNCCL.cpp:1671] [PG ID 0 PG GUID 0 Rank 4] HeartbeatMonitor environments: TORCH_NCCL_ENABLE_MONITORING (Whether to kill program when no watchdog heartbeat detected): 1, TORCH_NCCL_DUMP_ON_TIMEOUT: 1, TORCH_NCCL_WAIT_TIMEOUT_DUMP_MILSEC: 15000, TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC: 480, TORCH_NCCL_COORD_CHECK_MILSEC: 1000, TORCH_NCCL_LOG_CPP_STACK_ON_UNCLEAN_SHUTDOWN: 1
+I1020 12:21:02.825641 20559 ProcessGroupNCCL.cpp:2000] [PG ID 0 PG GUID 0 Rank 4] PGNCCL Watchdog environments: TORCH_NCCL_RETHROW_CUDA_ERRORS: 1, TORCH_NCCL_PROPAGATE_ERROR: 0, TORCH_NCCL_DESYNC_DEBUG: 0
+I1020 12:21:02.825769 20559 ProcessGroupNCCL.cpp:980] [PG ID 0 PG GUID 0 Rank 4] ProcessGroupNCCL initialization options: size: 8, global rank: 4, TIMEOUT(ms): 900000, USE_HIGH_PRIORITY_STREAM: 0, SPLIT_FROM: 0, SPLIT_COLOR: -2, PG Name: 0
+I1020 12:21:02.825775 20559 ProcessGroupNCCL.cpp:990] [PG ID 0 PG GUID 0 Rank 4] ProcessGroupNCCL environments: NCCL version: 2.22.3, TORCH_NCCL_ASYNC_ERROR_HANDLING: 1, TORCH_NCCL_ENABLE_TIMING: 0, TORCH_NCCL_BLOCKING_WAIT: 0, TORCH_DISTRIBUTED_DEBUG: OFF, TORCH_NCCL_USE_TENSOR_REGISTER_ALLOCATOR_HOOK: 0, TORCH_NCCL_TRACE_BUFFER_SIZE: 2000, TORCH_NCCL_NAN_CHECK: 0, TORCH_NCCL_CUDA_EVENT_CACHE: 1
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1020 12:21:02.869408 20555 ProcessGroupNCCL.cpp:1671] [PG ID 0 PG GUID 0 Rank 0] HeartbeatMonitor environments: TORCH_NCCL_ENABLE_MONITORING (Whether to kill program when no watchdog heartbeat detected): 1, TORCH_NCCL_DUMP_ON_TIMEOUT: 1, TORCH_NCCL_WAIT_TIMEOUT_DUMP_MILSEC: 15000, TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC: 480, TORCH_NCCL_COORD_CHECK_MILSEC: 1000, TORCH_NCCL_LOG_CPP_STACK_ON_UNCLEAN_SHUTDOWN: 1
+I1020 12:21:02.869474 20555 ProcessGroupNCCL.cpp:2000] [PG ID 0 PG GUID 0 Rank 0] PGNCCL Watchdog environments: TORCH_NCCL_RETHROW_CUDA_ERRORS: 1, TORCH_NCCL_PROPAGATE_ERROR: 0, TORCH_NCCL_DESYNC_DEBUG: 0
+I1020 12:21:02.869695 20555 ProcessGroupNCCL.cpp:980] [PG ID 0 PG GUID 0 Rank 0] ProcessGroupNCCL initialization options: size: 8, global rank: 0, TIMEOUT(ms): 900000, USE_HIGH_PRIORITY_STREAM: 0, SPLIT_FROM: 0, SPLIT_COLOR: -2, PG Name: 0
+I1020 12:21:02.869702 20555 ProcessGroupNCCL.cpp:990] [PG ID 0 PG GUID 0 Rank 0] ProcessGroupNCCL environments: NCCL version: 2.22.3, TORCH_NCCL_ASYNC_ERROR_HANDLING: 1, TORCH_NCCL_ENABLE_TIMING: 0, TORCH_NCCL_BLOCKING_WAIT: 0, TORCH_DISTRIBUTED_DEBUG: OFF, TORCH_NCCL_USE_TENSOR_REGISTER_ALLOCATOR_HOOK: 0, TORCH_NCCL_TRACE_BUFFER_SIZE: 2000, TORCH_NCCL_NAN_CHECK: 0, TORCH_NCCL_CUDA_EVENT_CACHE: 1
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1020 12:21:03.004117 20556 ProcessGroupNCCL.cpp:1671] [PG ID 0 PG GUID 0 Rank 1] HeartbeatMonitor environments: TORCH_NCCL_ENABLE_MONITORING (Whether to kill program when no watchdog heartbeat detected): 1, TORCH_NCCL_DUMP_ON_TIMEOUT: 1, TORCH_NCCL_WAIT_TIMEOUT_DUMP_MILSEC: 15000, TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC: 480, TORCH_NCCL_COORD_CHECK_MILSEC: 1000, TORCH_NCCL_LOG_CPP_STACK_ON_UNCLEAN_SHUTDOWN: 1
+I1020 12:21:03.004196 20556 ProcessGroupNCCL.cpp:2000] [PG ID 0 PG GUID 0 Rank 1] PGNCCL Watchdog environments: TORCH_NCCL_RETHROW_CUDA_ERRORS: 1, TORCH_NCCL_PROPAGATE_ERROR: 0, TORCH_NCCL_DESYNC_DEBUG: 0
+rank 4: build model
+I1020 12:21:03.004396 20556 ProcessGroupNCCL.cpp:980] [PG ID 0 PG GUID 0 Rank 1] ProcessGroupNCCL initialization options: size: 8, global rank: 1, TIMEOUT(ms): 900000, USE_HIGH_PRIORITY_STREAM: 0, SPLIT_FROM: 0, SPLIT_COLOR: -2, PG Name: 0
+I1020 12:21:03.004403 20556 ProcessGroupNCCL.cpp:990] [PG ID 0 PG GUID 0 Rank 1] ProcessGroupNCCL environments: NCCL version: 2.22.3, TORCH_NCCL_ASYNC_ERROR_HANDLING: 1, TORCH_NCCL_ENABLE_TIMING: 0, TORCH_NCCL_BLOCKING_WAIT: 0, TORCH_DISTRIBUTED_DEBUG: OFF, TORCH_NCCL_USE_TENSOR_REGISTER_ALLOCATOR_HOOK: 0, TORCH_NCCL_TRACE_BUFFER_SIZE: 2000, TORCH_NCCL_NAN_CHECK: 0, TORCH_NCCL_CUDA_EVENT_CACHE: 1
+rank 0: build model
+rank 5: build model
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1020 12:21:03.059698 20557 ProcessGroupNCCL.cpp:1671] [PG ID 0 PG GUID 0 Rank 2] HeartbeatMonitor environments: TORCH_NCCL_ENABLE_MONITORING (Whether to kill program when no watchdog heartbeat detected): 1, TORCH_NCCL_DUMP_ON_TIMEOUT: 1, TORCH_NCCL_WAIT_TIMEOUT_DUMP_MILSEC: 15000, TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC: 480, TORCH_NCCL_COORD_CHECK_MILSEC: 1000, TORCH_NCCL_LOG_CPP_STACK_ON_UNCLEAN_SHUTDOWN: 1
+I1020 12:21:03.059765 20557 ProcessGroupNCCL.cpp:2000] [PG ID 0 PG GUID 0 Rank 2] PGNCCL Watchdog environments: TORCH_NCCL_RETHROW_CUDA_ERRORS: 1, TORCH_NCCL_PROPAGATE_ERROR: 0, TORCH_NCCL_DESYNC_DEBUG: 0
+I1020 12:21:03.059968 20557 ProcessGroupNCCL.cpp:980] [PG ID 0 PG GUID 0 Rank 2] ProcessGroupNCCL initialization options: size: 8, global rank: 2, TIMEOUT(ms): 900000, USE_HIGH_PRIORITY_STREAM: 0, SPLIT_FROM: 0, SPLIT_COLOR: -2, PG Name: 0
+I1020 12:21:03.059975 20557 ProcessGroupNCCL.cpp:990] [PG ID 0 PG GUID 0 Rank 2] ProcessGroupNCCL environments: NCCL version: 2.22.3, TORCH_NCCL_ASYNC_ERROR_HANDLING: 1, TORCH_NCCL_ENABLE_TIMING: 0, TORCH_NCCL_BLOCKING_WAIT: 0, TORCH_DISTRIBUTED_DEBUG: OFF, TORCH_NCCL_USE_TENSOR_REGISTER_ALLOCATOR_HOOK: 0, TORCH_NCCL_TRACE_BUFFER_SIZE: 2000, TORCH_NCCL_NAN_CHECK: 0, TORCH_NCCL_CUDA_EVENT_CACHE: 1
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1020 12:21:03.064543 20558 ProcessGroupNCCL.cpp:1671] [PG ID 0 PG GUID 0 Rank 3] HeartbeatMonitor environments: TORCH_NCCL_ENABLE_MONITORING (Whether to kill program when no watchdog heartbeat detected): 1, TORCH_NCCL_DUMP_ON_TIMEOUT: 1, TORCH_NCCL_WAIT_TIMEOUT_DUMP_MILSEC: 15000, TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC: 480, TORCH_NCCL_COORD_CHECK_MILSEC: 1000, TORCH_NCCL_LOG_CPP_STACK_ON_UNCLEAN_SHUTDOWN: 1
+I1020 12:21:03.064600 20558 ProcessGroupNCCL.cpp:2000] [PG ID 0 PG GUID 0 Rank 3] PGNCCL Watchdog environments: TORCH_NCCL_RETHROW_CUDA_ERRORS: 1, TORCH_NCCL_PROPAGATE_ERROR: 0, TORCH_NCCL_DESYNC_DEBUG: 0
+I1020 12:21:03.064821 20558 ProcessGroupNCCL.cpp:980] [PG ID 0 PG GUID 0 Rank 3] ProcessGroupNCCL initialization options: size: 8, global rank: 3, TIMEOUT(ms): 900000, USE_HIGH_PRIORITY_STREAM: 0, SPLIT_FROM: 0, SPLIT_COLOR: -2, PG Name: 0
+I1020 12:21:03.064828 20558 ProcessGroupNCCL.cpp:990] [PG ID 0 PG GUID 0 Rank 3] ProcessGroupNCCL environments: NCCL version: 2.22.3, TORCH_NCCL_ASYNC_ERROR_HANDLING: 1, TORCH_NCCL_ENABLE_TIMING: 0, TORCH_NCCL_BLOCKING_WAIT: 0, TORCH_DISTRIBUTED_DEBUG: OFF, TORCH_NCCL_USE_TENSOR_REGISTER_ALLOCATOR_HOOK: 0, TORCH_NCCL_TRACE_BUFFER_SIZE: 2000, TORCH_NCCL_NAN_CHECK: 0, TORCH_NCCL_CUDA_EVENT_CACHE: 1
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1020 12:21:03.081468 20561 ProcessGroupNCCL.cpp:1671] [PG ID 0 PG GUID 0 Rank 6] HeartbeatMonitor environments: TORCH_NCCL_ENABLE_MONITORING (Whether to kill program when no watchdog heartbeat detected): 1, TORCH_NCCL_DUMP_ON_TIMEOUT: 1, TORCH_NCCL_WAIT_TIMEOUT_DUMP_MILSEC: 15000, TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC: 480, TORCH_NCCL_COORD_CHECK_MILSEC: 1000, TORCH_NCCL_LOG_CPP_STACK_ON_UNCLEAN_SHUTDOWN: 1
+I1020 12:21:03.081545 20561 ProcessGroupNCCL.cpp:2000] [PG ID 0 PG GUID 0 Rank 6] PGNCCL Watchdog environments: TORCH_NCCL_RETHROW_CUDA_ERRORS: 1, TORCH_NCCL_PROPAGATE_ERROR: 0, TORCH_NCCL_DESYNC_DEBUG: 0
+I1020 12:21:03.081754 20561 ProcessGroupNCCL.cpp:980] [PG ID 0 PG GUID 0 Rank 6] ProcessGroupNCCL initialization options: size: 8, global rank: 6, TIMEOUT(ms): 900000, USE_HIGH_PRIORITY_STREAM: 0, SPLIT_FROM: 0, SPLIT_COLOR: -2, PG Name: 0
+I1020 12:21:03.081761 20561 ProcessGroupNCCL.cpp:990] [PG ID 0 PG GUID 0 Rank 6] ProcessGroupNCCL environments: NCCL version: 2.22.3, TORCH_NCCL_ASYNC_ERROR_HANDLING: 1, TORCH_NCCL_ENABLE_TIMING: 0, TORCH_NCCL_BLOCKING_WAIT: 0, TORCH_DISTRIBUTED_DEBUG: OFF, TORCH_NCCL_USE_TENSOR_REGISTER_ALLOCATOR_HOOK: 0, TORCH_NCCL_TRACE_BUFFER_SIZE: 2000, TORCH_NCCL_NAN_CHECK: 0, TORCH_NCCL_CUDA_EVENT_CACHE: 1
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1020 12:21:03.094440 20562 ProcessGroupNCCL.cpp:1671] [PG ID 0 PG GUID 0 Rank 7] HeartbeatMonitor environments: TORCH_NCCL_ENABLE_MONITORING (Whether to kill program when no watchdog heartbeat detected): 1, TORCH_NCCL_DUMP_ON_TIMEOUT: 1, TORCH_NCCL_WAIT_TIMEOUT_DUMP_MILSEC: 15000, TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC: 480, TORCH_NCCL_COORD_CHECK_MILSEC: 1000, TORCH_NCCL_LOG_CPP_STACK_ON_UNCLEAN_SHUTDOWN: 1
+I1020 12:21:03.094503 20562 ProcessGroupNCCL.cpp:2000] [PG ID 0 PG GUID 0 Rank 7] PGNCCL Watchdog environments: TORCH_NCCL_RETHROW_CUDA_ERRORS: 1, TORCH_NCCL_PROPAGATE_ERROR: 0, TORCH_NCCL_DESYNC_DEBUG: 0
+I1020 12:21:03.094735 20562 ProcessGroupNCCL.cpp:980] [PG ID 0 PG GUID 0 Rank 7] ProcessGroupNCCL initialization options: size: 8, global rank: 7, TIMEOUT(ms): 900000, USE_HIGH_PRIORITY_STREAM: 0, SPLIT_FROM: 0, SPLIT_COLOR: -2, PG Name: 0
+I1020 12:21:03.094743 20562 ProcessGroupNCCL.cpp:990] [PG ID 0 PG GUID 0 Rank 7] ProcessGroupNCCL environments: NCCL version: 2.22.3, TORCH_NCCL_ASYNC_ERROR_HANDLING: 1, TORCH_NCCL_ENABLE_TIMING: 0, TORCH_NCCL_BLOCKING_WAIT: 0, TORCH_DISTRIBUTED_DEBUG: OFF, TORCH_NCCL_USE_TENSOR_REGISTER_ALLOCATOR_HOOK: 0, TORCH_NCCL_TRACE_BUFFER_SIZE: 2000, TORCH_NCCL_NAN_CHECK: 0, TORCH_NCCL_CUDA_EVENT_CACHE: 1
+rank 1: build model
+rank 2: build model
+rank 3: build model
+rank 6: build model
+rank 7: build model
+Fatal Python error: Segmentation fault
+
+Thread 0x00001462a589a4c0 (most recent call first):
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/init.py", line 118 in _no_grad_trunc_normal_
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/init.py", line 295 in trunc_normal_
+  File "/home/zk/vggt/vggt/vggt/layers/vision_transformer.py", line 174 in init_weights
+  File "/home/zk/vggt/vggt/vggt/layers/vision_transformer.py", line 171 in __init__
+  File "/home/zk/vggt/vggt/vggt/layers/vision_transformer.py", line 370 in vit_large
+  File "/home/zk/vggt/vggt/vggt/models/aggregator.py", line 173 in __build_patch_embed__
+  File "/home/zk/vggt/vggt/vggt/models/aggregator.py", line 75 in __init__
+  File "/home/zk/vggt/vggt/vggt/models/vggt.py", line 22 in __init__
+  File "/home/zk/vggt/validation-project/scripts/common.py", line 61 in build
+  File "/home/zk/vggt/validation-project/scripts/training.py", line 36 in <module>
+
+Extension modules: numpy.core._multiarray_umath, numpy.core._multiarray_tests, numpy.linalg._umath_linalg, numpy.fft._pocketfft_internal, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._mt19937, numpy.random.mtrand, numpy.random._philox, numpy.random._pcg64, numpy.random._sfc64, numpy.random._generator, torch._C, torch._C._dynamo.autograd_compiler, torch._C._dynamo.eval_frame, torch._C._dynamo.guards, torch._C._dynamo.utils, torch._C._fft, torch._C._linalg, torch._C._nested, torch._C._nn, torch._C._sparse, torch._C._special, hiredis.hiredis, psutil._psutil_linux, xxhash._xxhash, charset_normalizer.md, requests.packages.charset_normalizer.md, requests.packages.chardet.md, yaml._yaml (total: 31)
+W1020 12:21:08.302000 20542 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 20555 closing signal SIGTERM
+W1020 12:21:08.304000 20542 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 20557 closing signal SIGTERM
+W1020 12:21:08.305000 20542 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 20558 closing signal SIGTERM
+W1020 12:21:08.306000 20542 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 20559 closing signal SIGTERM
+W1020 12:21:08.307000 20542 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 20560 closing signal SIGTERM
+W1020 12:21:08.307000 20542 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 20561 closing signal SIGTERM
+W1020 12:21:08.308000 20542 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 20562 closing signal SIGTERM
+E1020 12:21:08.724000 20542 torch/distributed/elastic/multiprocessing/api.py:882] failed (exitcode: -11) local_rank: 1 (pid: 20556) of binary: /usr/bin/python
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/run.py", line 940, in <module>
+    main()
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 357, in wrapper
+    return f(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/run.py", line 936, in main
+    run(args)
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/run.py", line 927, in run
+    elastic_launch(
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/launcher/api.py", line 156, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/usr/local/lib/python3.10/dist-packages/torch/distributed/launcher/api.py", line 293, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+===========================================================
+/home/zk/vggt/validation-project/scripts/training.py FAILED
+-----------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+-----------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-10-20_12:21:08
+  host      : test
+  rank      : 1 (local_rank: 1)
+  exitcode  : -11 (pid: 20556)
+  error_file: <N/A>
+  traceback : Signal 11 (SIGSEGV) received by PID 20556
+===========================================================

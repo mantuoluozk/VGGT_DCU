@@ -1,0 +1,29 @@
+{
+  "Devices": [
+    {
+      "PathOnHost": "/dev/kfd",
+      "PathInContainer": "/dev/kfd",
+      "CgroupPermissions": "rwm"
+    },
+    {
+      "PathOnHost": "/dev/dri",
+      "PathInContainer": "/dev/dri",
+      "CgroupPermissions": "rwm"
+    },
+    {
+      "PathOnHost": "/dev/mkfd",
+      "PathInContainer": "/dev/mkfd",
+      "CgroupPermissions": "rwm"
+    }
+  ],
+  "IpcMode": "host",
+  "ShmSize": 274877906944,
+  "GroupAdd": [
+    "video"
+  ],
+  "SecurityOpt": [
+    "seccomp=unconfined",
+    "label=disable"
+  ],
+  "Privileged": true
+}

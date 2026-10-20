@@ -1,0 +1,51 @@
+Linux test 5.15.0-25-generic #25 SMP Fri Aug 30 17:28:59 CST 2024 x86_64 x86_64 x86_64 GNU/Linux
+PRETTY_NAME="Ubuntu 22.04.5 LTS"
+NAME="Ubuntu"
+VERSION_ID="22.04"
+VERSION="22.04.5 LTS (Jammy Jellyfish)"
+VERSION_CODENAME=jammy
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=jammy
+Architecture:                    x86_64
+CPU op-mode(s):                  32-bit, 64-bit
+Address sizes:                   48 bits physical, 48 bits virtual
+Byte Order:                      Little Endian
+CPU(s):                          256
+On-line CPU(s) list:             0-254
+Off-line CPU(s) list:            255
+Vendor ID:                       HygonGenuine
+Model name:                      Hygon C86-4G (OPN:7490)
+CPU family:                      24
+Model:                           4
+Thread(s) per core:              2
+Core(s) per socket:              64
+Socket(s):                       2
+Stepping:                        1
+BogoMIPS:                        5400.35
+Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid amd_dcm aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb hw_pstate ssbd ibrs ibpb stibp vmmcall fsgsbase tsc_adjust bmi1 avx2 smep bmi2 rdseed adx smap clflushopt sha_ni xsaveopt xsavec xgetbv1 xsaves clzero irperf xsaveerptr arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip overflow_recov succor smca sme sev sev_es
+Virtualization:                  AMD-V
+L1d cache:                       4 MiB (128 instances)
+L1i cache:                       4 MiB (128 instances)
+L2 cache:                        64 MiB (128 instances)
+L3 cache:                        512 MiB (32 instances)
+NUMA node(s):                    8
+NUMA node0 CPU(s):               0-15,128-143
+NUMA node1 CPU(s):               16-31,144-159
+               total        used        free      shared  buff/cache   available
+Mem:           751Gi        20Gi       677Gi       5.0Mi        53Gi       726Gi
+Swap:          8.0Gi          0B       8.0Gi
+hycu                 4702208  20
+hydrm_ttm_helper       16384  1 hycu
+hycu_sched             53248  1 hycu
+hyttm                  94208  2 hycu,hydrm_ttm_helper
+hykcl                  53248  5 hycu,hycu_sched,hyttm
+hydrm_buddy            20480  1 hycu
+hy_extra               65536  2 hycu,hycu_sched
+iommu_v2               24576  1 hycu
+drm_kms_helper        307200  5 hycu,drm_vram_helper,ast
+drm                   610304  27 drm_kms_helper,hycu,drm_vram_helper,ast,hydrm_buddy,hycu_sched,drm_ttm_helper,hydrm_ttm_helper,hyttm,ttm

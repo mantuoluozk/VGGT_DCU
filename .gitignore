@@ -9,3 +9,4 @@ checkpoints/
 *.tar.gz
 .venv/
 *.zip
+/dist/

@@ -1,0 +1,40 @@
+
+================================= System Management Interface ==================================
+================================================================================================
+HCU[0]		: Card Series:		 BW100
+HCU[0]		: Card Vendor:		 C-3000 IC Design Co., Ltd.
+HCU[1]		: Card Series:		 BW100
+HCU[1]		: Card Vendor:		 C-3000 IC Design Co., Ltd.
+HCU[2]		: Card Series:		 BW100
+HCU[2]		: Card Vendor:		 C-3000 IC Design Co., Ltd.
+HCU[3]		: Card Series:		 BW100
+HCU[3]		: Card Vendor:		 C-3000 IC Design Co., Ltd.
+HCU[4]		: Card Series:		 BW100
+HCU[4]		: Card Vendor:		 C-3000 IC Design Co., Ltd.
+HCU[5]		: Card Series:		 BW100
+HCU[5]		: Card Vendor:		 C-3000 IC Design Co., Ltd.
+HCU[6]		: Card Series:		 BW100
+HCU[6]		: Card Vendor:		 C-3000 IC Design Co., Ltd.
+HCU[7]		: Card Series:		 BW100
+HCU[7]		: Card Vendor:		 C-3000 IC Design Co., Ltd.
+================================================================================================
+================================================================================================
+HCU[0]		: vram Total Memory (MiB): 65520
+HCU[0]		: vram Total Used Memory (MiB): 16077
+HCU[1]		: vram Total Memory (MiB): 65520
+HCU[1]		: vram Total Used Memory (MiB): 3
+HCU[2]		: vram Total Memory (MiB): 65520
+HCU[2]		: vram Total Used Memory (MiB): 3
+HCU[3]		: vram Total Memory (MiB): 65520
+HCU[3]		: vram Total Used Memory (MiB): 3
+HCU[4]		: vram Total Memory (MiB): 65520
+HCU[4]		: vram Total Used Memory (MiB): 3
+HCU[5]		: vram Total Memory (MiB): 65520
+HCU[5]		: vram Total Used Memory (MiB): 3
+HCU[6]		: vram Total Memory (MiB): 65520
+HCU[6]		: vram Total Used Memory (MiB): 3
+HCU[7]		: vram Total Memory (MiB): 65520
+HCU[7]		: vram Total Used Memory (MiB): 3
+================================================================================================
+======================================== End of SMI Log ========================================
+

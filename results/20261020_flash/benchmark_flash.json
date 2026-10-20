@@ -1,0 +1,138 @@
+{
+  "utc": "2026-10-20T04:14:30.547024+00:00",
+  "phase": "benchmark",
+  "backend": "flash",
+  "status": "PASS",
+  "runs": [
+    {
+      "frames": 1,
+      "resolution": 518,
+      "ms": 188.65301919868216,
+      "fps": 5.30073679312197,
+      "peak_allocated_GB": 7.56177408,
+      "peak_reserved_GB": 8.32569344,
+      "status": "PASS"
+    },
+    {
+      "frames": 4,
+      "resolution": 518,
+      "ms": 529.4217079994269,
+      "fps": 7.555413651463514,
+      "peak_allocated_GB": 8.335053824,
+      "peak_reserved_GB": 9.030336512,
+      "status": "PASS"
+    },
+    {
+      "frames": 8,
+      "resolution": 518,
+      "ms": 1016.7312977951952,
+      "fps": 7.868352255259754,
+      "peak_allocated_GB": 9.630125568,
+      "peak_reserved_GB": 11.163140096,
+      "status": "PASS"
+    },
+    {
+      "frames": 16,
+      "resolution": 518,
+      "ms": 2203.7059463909827,
+      "fps": 7.260496812745484,
+      "peak_allocated_GB": 10.05063936,
+      "peak_reserved_GB": 13.293846528,
+      "status": "PASS"
+    },
+    {
+      "frames": 32,
+      "resolution": 518,
+      "ms": 5208.129462203942,
+      "fps": 6.144240505584216,
+      "peak_allocated_GB": 10.895622144,
+      "peak_reserved_GB": 13.87266048,
+      "status": "PASS"
+    },
+    {
+      "frames": 64,
+      "resolution": 518,
+      "ms": 13968.17858699942,
+      "fps": 4.581842908249084,
+      "peak_allocated_GB": 12.7875968,
+      "peak_reserved_GB": 16.118710272,
+      "status": "PASS"
+    },
+    {
+      "frames": 128,
+      "resolution": 518,
+      "ms": 42181.164176005404,
+      "fps": 3.03452980733074,
+      "peak_allocated_GB": 18.703879168,
+      "peak_reserved_GB": 23.475519488,
+      "status": "PASS"
+    },
+    {
+      "frames": 1,
+      "resolution": 224,
+      "ms": 102.67524539958686,
+      "fps": 9.73944592105181,
+      "peak_allocated_GB": 7.006094848,
+      "peak_reserved_GB": 7.132413952,
+      "status": "PASS"
+    },
+    {
+      "frames": 4,
+      "resolution": 224,
+      "ms": 160.060948994942,
+      "fps": 24.990480345873756,
+      "peak_allocated_GB": 7.162389504,
+      "peak_reserved_GB": 7.746879488,
+      "status": "PASS"
+    },
+    {
+      "frames": 8,
+      "resolution": 224,
+      "ms": 225.22468699607998,
+      "fps": 35.52008488367547,
+      "peak_allocated_GB": 7.402218496,
+      "peak_reserved_GB": 8.069840896,
+      "status": "PASS"
+    },
+    {
+      "frames": 16,
+      "resolution": 224,
+      "ms": 401.1280474020168,
+      "fps": 39.887512487912744,
+      "peak_allocated_GB": 7.486630912,
+      "peak_reserved_GB": 8.25229312,
+      "status": "PASS"
+    },
+    {
+      "frames": 32,
+      "resolution": 224,
+      "ms": 754.6750152017921,
+      "fps": 42.402357777067174,
+      "peak_allocated_GB": 7.644771328,
+      "peak_reserved_GB": 8.243904512,
+      "status": "PASS"
+    },
+    {
+      "frames": 64,
+      "resolution": 224,
+      "ms": 1562.7549177967012,
+      "fps": 40.95331857296753,
+      "peak_allocated_GB": 7.997920256,
+      "peak_reserved_GB": 8.690597888,
+      "status": "PASS"
+    },
+    {
+      "frames": 128,
+      "resolution": 224,
+      "ms": 3553.346694994252,
+      "fps": 36.022378615719916,
+      "peak_allocated_GB": 9.121037312,
+      "peak_reserved_GB": 9.63641344,
+      "status": "PASS"
+    }
+  ],
+  "weights": "random",
+  "warmup": 2,
+  "iterations": 5,
+  "memory_unit": "decimal GB; allocated and reserved are allocator statistics"
+}

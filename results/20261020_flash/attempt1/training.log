@@ -1,0 +1,10 @@
+/home/zk/vggt/vggt/vggt/layers/attention.py:61: UserWarning: sdpa adopt the new interface of flash-attn (Triggered internally at /home/pytorch/aten/src/ATen/native/transformers/hip/cutlassfa_adapter.h:145.)
+  x = F.scaled_dot_product_attention(q, k, v, dropout_p=self.attn_drop.p if self.training else 0.0)
+/home/zk/vggt/vggt/vggt/models/vggt.py:65: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/home/zk/vggt/vggt/vggt/layers/attention.py:61: UserWarning: 1Torch was not compiled with memory efficient attention. (Triggered internally at /home/pytorch/aten/src/ATen/native/transformers/hip/sdp_utils.cpp:790.)
+  x = F.scaled_dot_product_attention(q, k, v, dropout_p=self.attn_drop.p if self.training else 0.0)
+Traceback (most recent call last):
+  File "/home/zk/vggt/validation-project/scripts/training.py", line 104, in <module>
+    assert finite, "Nonfinite gradient"
+AssertionError: Nonfinite gradient

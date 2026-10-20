@@ -1,0 +1,100 @@
+{
+  "phases": {
+    "environment": {
+      "command": [
+        "/usr/bin/python",
+        "-u",
+        "/home/zk/vggt/validation-project/scripts/environment.py"
+      ],
+      "start_utc": "2026-10-20T04:03:39.401407+00:00",
+      "end_utc": "2026-10-20T04:03:59.841591+00:00",
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    "flash": {
+      "command": [
+        "/usr/bin/python",
+        "-u",
+        "/home/zk/vggt/validation-project/scripts/flash.py"
+      ],
+      "start_utc": "2026-10-20T04:03:59.841864+00:00",
+      "end_utc": "2026-10-20T04:04:16.577208+00:00",
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    "smoke": {
+      "command": [
+        "/usr/bin/python",
+        "-u",
+        "/home/zk/vggt/validation-project/scripts/inference.py",
+        "smoke"
+      ],
+      "start_utc": "2026-10-20T04:04:16.577573+00:00",
+      "end_utc": "2026-10-20T04:04:50.234597+00:00",
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    "correctness": {
+      "command": [
+        "/usr/bin/python",
+        "-u",
+        "/home/zk/vggt/validation-project/scripts/inference.py",
+        "correctness"
+      ],
+      "start_utc": "2026-10-20T04:04:50.235781+00:00",
+      "end_utc": "2026-10-20T04:05:36.208779+00:00",
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    "benchmark_flash": {
+      "command": [
+        "/usr/bin/python",
+        "-u",
+        "/home/zk/vggt/validation-project/scripts/inference.py",
+        "benchmark",
+        "--backend",
+        "flash",
+        "--random-init"
+      ],
+      "start_utc": "2026-10-20T04:05:36.209262+00:00",
+      "end_utc": "2026-10-20T04:14:34.362802+00:00",
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    "training": {
+      "command": [
+        "/usr/bin/python",
+        "-u",
+        "/home/zk/vggt/validation-project/scripts/training.py",
+        "--steps",
+        "1",
+        "--frames",
+        "6"
+      ],
+      "start_utc": "2026-10-20T04:14:34.363273+00:00",
+      "end_utc": "2026-10-20T04:15:06.919501+00:00",
+      "exit_code": 1,
+      "status": "FAIL"
+    },
+    "ddp": {
+      "command": [
+        "/usr/bin/python",
+        "-u",
+        "-m",
+        "torch.distributed.run",
+        "--standalone",
+        "--nproc_per_node=8",
+        "/home/zk/vggt/validation-project/scripts/training.py",
+        "--ddp",
+        "--steps",
+        "3",
+        "--frames",
+        "4"
+      ],
+      "start_utc": "2026-10-20T04:15:06.919985+00:00",
+      "end_utc": "2026-10-20T04:15:43.481909+00:00",
+      "exit_code": 1,
+      "status": "FAIL"
+    }
+  }
+}

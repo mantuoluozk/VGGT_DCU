@@ -1,0 +1,112 @@
+[
+  {
+    "batch": 1,
+    "length": 261,
+    "gradient_scale": 1.0,
+    "output_finite": true,
+    "gradients_finite": [
+      true,
+      true,
+      true
+    ]
+  },
+  {
+    "batch": 1,
+    "length": 261,
+    "gradient_scale": 1e-06,
+    "output_finite": true,
+    "gradients_finite": [
+      true,
+      true,
+      true
+    ]
+  },
+  {
+    "batch": 6,
+    "length": 261,
+    "gradient_scale": 1.0,
+    "output_finite": true,
+    "gradients_finite": [
+      true,
+      true,
+      true
+    ]
+  },
+  {
+    "batch": 6,
+    "length": 261,
+    "gradient_scale": 1e-06,
+    "output_finite": true,
+    "gradients_finite": [
+      true,
+      true,
+      true
+    ]
+  },
+  {
+    "batch": 1,
+    "length": 1566,
+    "gradient_scale": 1.0,
+    "output_finite": true,
+    "gradients_finite": [
+      true,
+      true,
+      true
+    ]
+  },
+  {
+    "batch": 1,
+    "length": 1566,
+    "gradient_scale": 1e-06,
+    "output_finite": true,
+    "gradients_finite": [
+      true,
+      true,
+      true
+    ]
+  },
+  {
+    "batch": 1,
+    "length": 1044,
+    "gradient_scale": 1.0,
+    "output_finite": true,
+    "gradients_finite": [
+      true,
+      true,
+      true
+    ]
+  },
+  {
+    "batch": 1,
+    "length": 1044,
+    "gradient_scale": 1e-06,
+    "output_finite": true,
+    "gradients_finite": [
+      true,
+      true,
+      true
+    ]
+  },
+  {
+    "batch": 1,
+    "length": 512,
+    "gradient_scale": 1.0,
+    "output_finite": true,
+    "gradients_finite": [
+      true,
+      true,
+      true
+    ]
+  },
+  {
+    "batch": 1,
+    "length": 512,
+    "gradient_scale": 1e-06,
+    "output_finite": true,
+    "gradients_finite": [
+      true,
+      true,
+      true
+    ]
+  }
+]

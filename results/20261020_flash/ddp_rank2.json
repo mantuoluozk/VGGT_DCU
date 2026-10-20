@@ -1,0 +1,113 @@
+{
+  "utc": "2026-10-20T04:23:22.188697+00:00",
+  "status": "PASS",
+  "rank": 2,
+  "world_size": 8,
+  "frames": 4,
+  "resolution": 224,
+  "contiguous_qkv": true,
+  "initial_loss_scale": 65536.0,
+  "optimizer": {
+    "name": "AdamW",
+    "lr": 0.0001,
+    "weight_decay": 0.01
+  },
+  "model_init_threads": 1,
+  "compute_threads": 8,
+  "backend": "flash",
+  "all_reduce_sentinel": 36.0,
+  "steps": [
+    {
+      "step": 0,
+      "loss": 13.823873519897461,
+      "seconds_including_checks": 7.420928822015412,
+      "gradient_sample_max_rank_difference": 0.0,
+      "parameter_sample_max_rank_difference": 0.0,
+      "parameter_max_sample_update": 0.00010102987289428711,
+      "loss_scale": 65536.0,
+      "loss_components": {
+        "loss_camera": 0.9343712329864502,
+        "loss_T": 0.38345736265182495,
+        "loss_R": 0.29810380935668945,
+        "loss_FL": 0.5056200623512268,
+        "loss_conf_depth": 4.090479850769043,
+        "loss_reg_depth": 2.094205379486084,
+        "loss_grad_depth": 2.967332363128662,
+        "objective": 13.823873519897461
+      },
+      "peak_allocated_GB": 23.246861312,
+      "rank_losses": [
+        13.986690521240234,
+        13.940553665161133,
+        13.823873519897461,
+        13.705934524536133,
+        13.920659065246582,
+        13.935050964355469,
+        14.056774139404297,
+        14.051523208618164
+      ]
+    },
+    {
+      "step": 1,
+      "loss": 27.960033416748047,
+      "seconds_including_checks": 1.0282368639600463,
+      "gradient_sample_max_rank_difference": 0.0,
+      "parameter_sample_max_rank_difference": 0.0,
+      "parameter_max_sample_update": 0.00010114908218383789,
+      "loss_scale": 65536.0,
+      "loss_components": {
+        "loss_camera": 3.79207444190979,
+        "loss_T": 2.055281162261963,
+        "loss_R": 1.306514859199524,
+        "loss_FL": 0.8605569005012512,
+        "loss_conf_depth": 3.9692862033843994,
+        "loss_reg_depth": 2.0631117820739746,
+        "loss_grad_depth": 2.9672625064849854,
+        "objective": 27.960033416748047
+      },
+      "peak_allocated_GB": 23.2474624,
+      "rank_losses": [
+        27.95425033569336,
+        27.971881866455078,
+        27.960033416748047,
+        27.959030151367188,
+        27.960601806640625,
+        27.933670043945312,
+        27.93703842163086,
+        27.918132781982422
+      ]
+    },
+    {
+      "step": 2,
+      "loss": 23.98180389404297,
+      "seconds_including_checks": 1.1358115479815751,
+      "gradient_sample_max_rank_difference": 0.0,
+      "parameter_sample_max_rank_difference": 0.0,
+      "parameter_max_sample_update": 0.00010138750076293945,
+      "loss_scale": 65536.0,
+      "loss_components": {
+        "loss_camera": 3.058225393295288,
+        "loss_T": 1.5689656734466553,
+        "loss_R": 1.1527376174926758,
+        "loss_FL": 0.6730442047119141,
+        "loss_conf_depth": 3.728116035461426,
+        "loss_reg_depth": 1.9953725337982178,
+        "loss_grad_depth": 2.967186450958252,
+        "objective": 23.98180389404297
+      },
+      "peak_allocated_GB": 23.2474624,
+      "rank_losses": [
+        23.97418212890625,
+        23.968090057373047,
+        23.98180389404297,
+        23.9406795501709,
+        23.97895050048828,
+        23.95184326171875,
+        23.961444854736328,
+        23.960466384887695
+      ]
+    }
+  ],
+  "sync_scope": "257 evenly spaced elements from EVERY trainable parameter/gradient; exact all-rank comparison",
+  "training_scope": "Random weights, synthetic GT, all aggregator parameters trainable; no full dataset training"
+}

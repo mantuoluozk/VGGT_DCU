@@ -1,0 +1,39 @@
+/home/zk/vggt/validation-project/scripts/flash.py:20: UserWarning: sdpa adopt the new interface of flash-attn (Triggered internally at /home/pytorch/aten/src/ATen/native/transformers/hip/cutlassfa_adapter.h:145.)
+  actual = F.scaled_dot_product_attention(q, k, v)
+{
+  "torch": "2.9.0",
+  "flash_attn": "2.6.1",
+  "status": "PASS",
+  "tests": [
+    {
+      "dtype": "torch.float16",
+      "status": "PASS",
+      "forward_relative_l2": 0.0,
+      "gradient_relative_l2": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ops": [
+        "aten::scaled_dot_product_attention",
+        "aten::_scaled_dot_product_flash_attention",
+        "aten::_flash_attention_forward"
+      ]
+    },
+    {
+      "dtype": "torch.bfloat16",
+      "status": "PASS",
+      "forward_relative_l2": 0.0,
+      "gradient_relative_l2": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ops": [
+        "aten::scaled_dot_product_attention",
+        "aten::_scaled_dot_product_flash_attention",
+        "aten::_flash_attention_forward"
+      ]
+    }
+  ]
+}
