@@ -7,7 +7,7 @@ import torch
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel
 
-from common import backend_scope, build, parser, save, setup
+from common import backend_scope, build, output_stats, parser, save, setup
 
 p = parser("VGGT single-card / DDP training graph validation")
 p.add_argument("--ddp", action="store_true")
@@ -93,6 +93,7 @@ for step in range(args.steps):
     with backend_scope(core, args.backend):
         with torch.autocast("cuda", dtype=torch.bfloat16):
             predictions = model(images=images)
+            output_stats(predictions)
             losses = loss_fn(predictions, batch)
             loss = losses["objective"]
         assert torch.isfinite(loss), "Nonfinite loss"
@@ -109,6 +110,7 @@ for step in range(args.steps):
     scaler.step(optimizer)
     scaler.update()
     after = signature()
+    assert torch.isfinite(after).all(), "Nonfinite parameter sample"
     update = (after-before).abs().max().item()
     assert update > 0 and scaler.get_scale() >= old_scale, "Optimizer skipped or did not update parameters"
     parameter_error = equality_error(after)

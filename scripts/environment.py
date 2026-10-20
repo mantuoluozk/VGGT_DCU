@@ -1,5 +1,6 @@
 import importlib.metadata
 import platform
+from pathlib import Path
 
 import torch
 import torchvision
@@ -18,6 +19,7 @@ data = {
     "devices": [{"index": i, "name": torch.cuda.get_device_name(i),
                  "memory_bytes": torch.cuda.get_device_properties(i).total_memory} for i in range(torch.cuda.device_count())],
     "backend_flags": {"flash": torch.backends.cuda.flash_sdp_enabled(), "math": torch.backends.cuda.math_sdp_enabled()},
+    "test_script_sha256": {path.name: sha256(path) for path in sorted(Path(__file__).resolve().parent.glob("*.py"))},
 }
 assert len(data["devices"]) == 8, "Expected 8 DCUs for this acceptance run"
 assert data["source_commit"]["code"] == 0 and data["source_status"]["code"] == 0
