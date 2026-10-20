@@ -1,24 +1,81 @@
-# VGGT 海光 DCU 复测项目
+# VGGT 海光 DCU 测试项目
 
-按客户 VGGT 报告的 Phase 1–6 验证 BW100 上的环境、推理、性能、训练图与 8 卡 DDP。主要代码为测试脚本，VGGT 原项目与模型权重通过路径引用，不随本项目重复分发。
+本项目用于验证 VGGT 在海光 BW100 上的图片处理、Flash Attention 加速、单卡训练和八卡协同训练能力，提供测试脚本、运行教程和实测数据。
 
-本次交付：[完整测试报告](reports/VGGT_DCU_完整测试报告_20261020.md)、[原始结果与日志](results/20261020_flash/)、[客户原报告](references/VGGT_海光DCU_验证报告与Runbook.md)。
+完整说明见 [VGGT 海光 BW100 测试报告](reports/VGGT_DCU_完整测试报告_20261020.md)。
 
-代码仓库：[光源 GitLab](https://developer.sourcefind.cn/codes/zhengke/vggt_dcu)、[GitHub](https://github.com/mantuoluozk/VGGT_DCU)。
+## 1. 测试环境
 
-本轮使用 Flash Attention。BF16 主干强制 `SDPBackend.FLASH_ATTENTION`，失败即报错，不允许主干静默回退。VGGT 原代码的相机头以 FP32 运行，保留其 MATH 注意力；客户步骤中的 FP32 冒烟与自一致性检查也保留。这两点不属于 MATH 性能对照。
+| 项目 | 配置 |
+| --- | --- |
+| CPU | 2 × 海光 C86-4G（7490），合计 128 核、256 逻辑线程 |
+| 系统内存 | 约 751 GiB |
+| 加速卡 | 8 × 海光 BW100，单卡为 64GB 级显存 |
+| 操作系统 | Ubuntu 22.04.5 LTS |
+| 开发工具包 | DTK 26.04 |
+| Python | 3.10.12 |
+| PyTorch / torchvision | 2.9.0 / 0.24.0，海光适配版 |
+| Flash Attention | 2.6.1，海光适配版 |
+| 模型 | VGGT-1B |
 
-## 1. 环境
-
-已验证镜像：
+使用的镜像：
 
 ```text
 harbor.sourcefind.cn:5443/hcu/admin/base/pytorch:2.9.0-ubuntu22.04-dtk26.04-py3.10
 ```
 
-当前服务器容器名为 `zk-vggt`，项目目录为 `/home/zk/vggt/validation-project`，VGGT 源码为 `/home/zk/vggt/vggt`，权重为 `/home/zk/vggt/vggt_ckpt/model.pt`。
+## 2. 实测结果
 
-新环境启动示例（在服务器宿主机执行，已有容器时无需重复）：
+测试日期：2026-10-20。运行环境、Flash 加速、模型基本运行、官方预训练模型、推理性能、单卡训练流程和八卡协同训练，7 个测试项目全部通过。
+
+### 图片处理速度与显存
+
+单卡使用 BF16 计算格式和 Flash Attention；模型参数随机初始化。每组先预热 2 次，再运行 5 次取平均。耗时对应整组图片的模型计算，不包含读取图片；1000 毫秒等于 1 秒。
+
+| 图片数量 | 单张图片分辨率 | 结果 | 整组平均耗时 ms | 每秒图片数 | 计算使用显存峰值 GB | 框架预留显存峰值 GB |
+| ---: | --- | --- | ---: | ---: | ---: | ---: |
+| 1 | 518×518 | 通过 | 188.7 | 5.30 | 7.56 | 8.33 |
+| 4 | 518×518 | 通过 | 529.4 | 7.56 | 8.34 | 9.03 |
+| 8 | 518×518 | 通过 | 1016.7 | 7.87 | 9.63 | 11.16 |
+| 16 | 518×518 | 通过 | 2203.7 | 7.26 | 10.05 | 13.29 |
+| 32 | 518×518 | 通过 | 5208.1 | 6.14 | 10.90 | 13.87 |
+| 64 | 518×518 | 通过 | 13968.2 | 4.58 | 12.79 | 16.12 |
+| 128 | 518×518 | 通过 | 42181.2 | 3.03 | 18.70 | 23.48 |
+| 1 | 224×224 | 通过 | 102.7 | 9.74 | 7.01 | 7.13 |
+| 4 | 224×224 | 通过 | 160.1 | 24.99 | 7.16 | 7.75 |
+| 8 | 224×224 | 通过 | 225.2 | 35.52 | 7.40 | 8.07 |
+| 16 | 224×224 | 通过 | 401.1 | 39.89 | 7.49 | 8.25 |
+| 32 | 224×224 | 通过 | 754.7 | 42.40 | 7.64 | 8.24 |
+| 64 | 224×224 | 通过 | 1562.8 | 40.95 | 8.00 | 8.69 |
+| 128 | 224×224 | 通过 | 3553.3 | 36.02 | 9.12 | 9.64 |
+
+14 组用例全部通过，两种分辨率均完成一次输入 128 张图片的测试。“计算使用显存”是分配给模型数据和计算结果的空间；“框架预留显存”还包括留待后续复用的空间，两列不能相加。
+
+### 模型结果与训练
+
+| 测试项目 | 实测结果 |
+| --- | --- |
+| Flash Attention | FP16、BF16 的图片处理计算和训练反向计算均通过；模型运行记录确认实际调用 Flash |
+| 官方预训练模型 | kitchen 场景图片可输出有效结果，相同输入重复运行的主要结果完全一致 |
+| 相同图片检查 | 相机参数波动 0.000068，深度波动 0.003909，均低于测试阈值 0.01 |
+| 单卡训练 | 6 张 224×224 图片，完成 1 次参数更新；训练及检查耗时 6.03 秒，显存峰值 23.26GB |
+| 八卡协同训练 | 每卡 4 张 224×224 图片，连续完成 3 次参数更新；单卡显存峰值最大 23.25GB |
+
+八卡训练使用不同输入，实测数据如下。误差指标用于记录训练流程，不是实际业务准确率。
+
+| 训练步骤 | 8 张卡的训练误差指标范围 | 训练计算抽样一致性 | 更新后参数抽样一致性 |
+| ---: | --- | --- | --- |
+| 1 | 13.705935–14.056774 | 通过，差异为 0 | 通过，差异为 0 |
+| 2 | 27.918133–27.971882 | 通过，差异为 0 | 通过，差异为 0 |
+| 3 | 23.940680–23.981804 | 通过，差异为 0 | 通过，差异为 0 |
+
+本次验证了基础运行与短步训练能力，未包含完整数据集训练、业务精度评估和长时间稳定性测试。
+
+## 3. 准备运行环境
+
+### 启动容器
+
+将项目放在 `/home/zk/vggt/validation-project`，在服务器宿主机执行：
 
 ```bash
 docker run -d --name zk-vggt \
@@ -31,68 +88,63 @@ docker run -d --name zk-vggt \
   sleep infinity
 ```
 
-需要宿主机驱动与该镜像配套；设备节点按实际主机提供。本次使用已有容器，实际容器配置另存于结果目录。不要直接安装上游 `requirements.txt` 中的 CUDA torch / torchvision，也不要导入客户的 `dcu_compat.py`。
+容器需使用配套的宿主机驱动和设备节点。镜像已提供适配海光的 PyTorch、torchvision 和 Flash Attention，保留这些组件的版本。
 
-容器内补充训练 loss 依赖：
+### 准备模型代码与参数
+
+进入容器和项目目录，执行：
 
 ```bash
+docker exec -it zk-vggt bash
+cd /home/zk/vggt/validation-project
+
 python -m pip install -r requirements-extra.txt
-```
-
-## 2. 准备源码与权重
-
-已有客户材料时直接使用上面的 `--source` 和 `--checkpoint`。干净环境可以运行：
-
-```bash
 python scripts/prepare_source.py
 python scripts/download_checkpoint.py
 ```
 
-源码固定在本次验证的官方提交 `a288dd0f14786c93483e45524328726ab7b1b4ce`。下载脚本使用 `facebook/VGGT-1B` 的 `model.pt`；权重哈希由环境脚本记录。下载服务如需配置，用 `HF_ENDPOINT`、`HF_TOKEN` 环境变量，勿将 token 写入 Git。
+模型代码下载到 `vendor/vggt`，预训练参数下载到 `checkpoints/model.pt`。模型代码固定在提交 `a288dd0f14786c93483e45524328726ab7b1b4ce`；参数文件为 `facebook/VGGT-1B` 的 `model.pt`。下载服务可通过 `HF_ENDPOINT`、`HF_TOKEN` 环境变量配置。
 
-## 3. 一键完整运行
+也可在运行命令中用 `--source`、`--checkpoint` 指向已准备好的模型代码和参数文件。
 
-服务器宿主机执行：
+## 4. 一键测试
+
+在容器内的项目目录执行：
 
 ```bash
-docker exec -w /home/zk/vggt/validation-project zk-vggt \
-  python -u scripts/run_suite.py \
-    --source /home/zk/vggt/vggt \
-    --checkpoint /home/zk/vggt/vggt_ckpt/model.pt \
-    --output results/my_run
+python -u scripts/run_suite.py \
+  --source vendor/vggt \
+  --checkpoint checkpoints/model.pt \
+  --output results/my_run
 ```
 
-每次复测使用新输出目录，避免混用历史结果。结果包含 JSON、完整日志、命令、退出码和 UTC 起止时间。任一阶段失败，最终退出码非零，其余阶段仍继续，方便收集完整证据。性能扫帧遇到 OOM 时记录容量边界并停止该分辨率的更大帧数，OOM 不伪装成执行通过。
+输出包括测试数据、运行日志和自动生成的 `report.md`。测试项目及对应脚本如下：
 
-结束时自动生成输出目录中的 `report.md`，也可重新生成：
+| 测试项目 | 脚本 | 检查内容 |
+| --- | --- | --- |
+| 运行环境 | `environment.py` | 设备、软件版本及模型文件信息 |
+| Flash 加速 | `flash.py` | FP16/BF16 计算及两种调用方式的一致性 |
+| 模型基本运行 | `inference.py smoke` | 不同图片数量、尺寸和计算格式 |
+| 预训练模型 | `inference.py correctness` | 真实图片、相同输入与重复运行 |
+| 性能与显存 | `inference.py benchmark` | 2 种分辨率、7 档图片数量 |
+| 单卡训练 | `training.py` | 完成计算、误差分析和参数更新 |
+| 八卡协同训练 | `training.py --ddp` | 通信、参数同步和连续 3 次更新 |
+
+一键测试的性能部分使用随机初始化参数。单独运行 `benchmark` 并省略 `--random-init`，可测试预训练模型的性能。
+
+手动生成报告：
 
 ```bash
 python scripts/make_report.py results/my_run --output reports/测试报告.md
 ```
 
-报告中的服务器、镜像与日期说明针对本次已验证环境；在其他机器复测时应相应更新这些说明。
+## 5. 分项运行
 
-运行顺序：
-
-| 阶段 | 脚本 | 检查内容 |
-| --- | --- | --- |
-| Phase 1 | `environment.py` | 8 卡、版本、源码提交、权重 SHA256 |
-| 补充 | `flash.py` | FP16/BF16，强制 Flash SDPA 与直接 Flash 接口的前向、反向；算子记录 |
-| Phase 2 | `inference.py smoke` | 随机权重，4×518 FP32、1×224 FP32、4×224 BF16；形状与有限性 |
-| Phase 3 | `inference.py correctness` | 真实权重，客户随机图／相同帧检查，补充官方 kitchen 图像与 Flash 算子检查 |
-| Phase 4 | `inference.py benchmark` | BF16 Flash，518/224，S=1/4/8/16/32/64/128，预热 2 次、计时 5 次 |
-| Phase 5 | `training.py` | camera+depth，真实 MultitaskLoss，合成 GT，单卡 S=6、224，优化一步 |
-| Phase 6 | `training.py --ddp` | 8 卡 S=4、224，真实 loss，3 步，通信与同步检查 |
-
-Phase 4 一键默认使用随机初始化权重，与客户 benchmark 脚本一致。需要真实权重性能时，单独运行 benchmark 并省略 `--random-init`。性能时间为模型前向平均耗时，不包含数据加载与输出有限性检查；显存给出 allocator 的 allocated / reserved 峰值，单位为十进制 GB。
-
-## 4. 分阶段运行与重跑
-
-进入容器，在项目根目录设置路径：
+在容器内设置路径并执行所需项目：
 
 ```bash
-export VGGT_SOURCE=/home/zk/vggt/vggt
-export VGGT_CHECKPOINT=/home/zk/vggt/vggt_ckpt/model.pt
+export VGGT_SOURCE=$PWD/vendor/vggt
+export VGGT_CHECKPOINT=$PWD/checkpoints/model.pt
 export VGGT_OUTPUT=$PWD/results/manual
 export OMP_NUM_THREADS=8 MKL_NUM_THREADS=8
 export NCCL_SOCKET_IFNAME=lo PYTHONFAULTHANDLER=1
@@ -107,7 +159,7 @@ python -m torch.distributed.run --standalone --nproc_per_node=8 \
   scripts/training.py --ddp --steps 3 --frames 4
 ```
 
-也可用统一入口只重跑指定阶段：
+统一入口也支持选择测试项目，例如：
 
 ```bash
 python scripts/run_suite.py --source "$VGGT_SOURCE" \
@@ -115,37 +167,10 @@ python scripts/run_suite.py --source "$VGGT_SOURCE" \
   --phases training ddp
 ```
 
-相同输出目录的同名阶段会覆盖日志和 JSON，manifest 更新对应记录。正式复测建议新目录保留历史。DDP 各 rank 使用不同随机输入；检查全部参数梯度的有限性，并在清空梯度前，对每个可训练张量最多 257 个等距样本做跨卡一致性验证，优化后同样检查参数样本一致性及更新。采样同步检查不等同于全张量逐元素校验。训练用 BF16 autocast + GradScaler（初始 scale=65536），检查优化步未被跳过。单卡 AdamW 使用 lr=5e-5、weight_decay=0.05；DDP 按客户脚本使用 lr=1e-4、weight_decay=0.01。
+### 训练配置
 
-### 本镜像的训练兼容处理
+训练使用 BF16 和 Flash Attention，启用相机参数与深度估计任务。单卡 AdamW 参数为 `lr=5e-5`、`weight_decay=0.05`；八卡为 `lr=1e-4`、`weight_decay=0.01`。GradScaler 的初始缩放值为 65536。
 
-复测中，原生 Q/K/V 布局的 Flash 反向在 VGGT 训练中返回 NaN；降低 loss scale 后仍可复现，独立的连续张量 Flash 算子测试则正常。训练脚本默认在进入 SDPA 前执行 `q.contiguous()`、`k.contiguous()`、`v.contiguous()`，保持 Flash 后端和模型数值精度。处理仅在测试脚本的上下文内生效，不修改上游源码；也覆盖激活检查点的反向重计算。推理基准未启用这项训练处理。
+脚本默认将 Q/K/V 数据转为连续存储后进入 Flash 计算；模型初始化使用 1 个 CPU 线程，随后恢复为 8 线程计算。相关选项为 `--contiguous-qkv`、`--init-threads`，异常追踪选项为 `--anomaly`。八卡同步检查对每组参数及训练计算结果各抽取最多 257 个数据点。
 
-可用 `--no-contiguous-qkv` 重现原始布局路径；`--anomaly` 开启反向异常定位。原始失败与诊断证据随正式结果保存。此处仅报告当前镜像和模型组合的实测现象，不泛化为所有 Flash 实现的限制。
-
-八卡启动还曾在并行构建模型时的 CPU `trunc_normal_/erfinv` 出现 SIGSEGV。脚本默认使用 1 个 CPU 线程完成模型初始化，随后恢复 8 线程计算，完整八卡测试已通过；可通过 `--init-threads` 调整。该处理仅改变初始化线程数，未更改初始化函数或冻结模型参数。
-
-统一入口默认设置 `NCCL_SOCKET_IFNAME=lo`（与客户单机 DDP 命令一致）和 `PYTHONFAULTHANDLER=1`，外部已设置的网卡值会保留。还提供 `diagnose_flash.py` 与 `distributed_probe.py`，分别用于最小 Flash 形状／梯度和八卡通信诊断。
-
-## 5. 验收边界
-
-- 这套流程与客户已执行的 VGGT 测试范围对齐；不包含材料中的独立硬件压力测试或 VGGT-Omega 报告。
-- 未提供 CO3D 数据集，因此不运行官方 `training/launch.py` 的完整数据集训练；合成 GT 训练图通过不等同于完整训练收敛。
-- 位姿合法、深度有限、相同帧一致只验证基本数值行为。真实 kitchen 图片是推理冒烟，没有任务 GT，不能宣称重建精度已达标。
-- Flash 两种入口的一致性只证明调用路径一致，不是独立算法正确性证明。本轮按要求不做 MATH 性能或精度基准。
-- 客户与本轮 torch、环境、权重／AMP 配置等有差异，跨报告性能仅作观察，不把变化全部归因于 Flash。
-
-## 6. Git 与结果
-
-本仓库跟踪脚本、教程、报告与本次测试证据；忽略模型权重、上游源码、大型二进制和本机连接配置。`results/initial` 为首轮调查历史，正式完整复测结果以 `results/20261020_flash` 为准。
-
-```bash
-git log --oneline
-git status
-```
-
-交付包如包含 `.bundle`，可以离线恢复完整 Git 历史：
-
-```bash
-git clone vggt-dcu-validation.bundle vggt-dcu-validation
-```
+BF16 模型主干使用 Flash Attention；模型中负责相机参数计算的 FP32 部分保持原有精度设置。额外诊断工具为 `diagnose_flash.py`（Flash 计算检查）和 `distributed_probe.py`（八卡通信检查）。

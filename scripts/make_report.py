@@ -36,103 +36,108 @@ lines = [
     "## 1. 软硬件环境", "",
     "### 1.1 硬件环境", "",
     "| 项目 | 配置 |", "| --- | --- |",
-    "| CPU | 2 × Hygon C86-4G（OPN:7490），合计 128 核、256 逻辑线程，测试时 255 个逻辑线程在线 |",
+    "| CPU | 2 × 海光 C86-4G（7490），合计 128 核、256 逻辑线程 |",
     "| 系统可见内存 | 约 751 GiB |",
     f"| 加速设备 | {len(env.get('devices', []))} × Hygon BW100 DCU |",
-    "| 单卡显存 | 框架报告 68,702,699,520 字节，约 63.98 GiB |",
-    "| 架构 | x86_64 |",
-    "| 使用方式 | 推理及单卡训练使用逻辑 0 号卡；分布式训练使用全部 8 张卡 |", "",
+    "| 单卡显存 | 64GB 级显存，软件读取容量约 63.98 GiB |",
+    "| 使用方式 | 图片处理和单卡训练使用 1 张卡；八卡协同训练使用全部 8 张卡 |", "",
     "### 1.2 软件环境", "",
     "| 项目 | 版本或配置 |", "| --- | --- |",
     "| 容器操作系统 | Ubuntu 22.04.5 LTS |",
-    "| 共享宿主机内核 | Linux 5.15.0-25-generic |",
-    "| DTK | 26.04 |",
-    f"| HIP | {env.get('hip')} |",
+    "| 海光开发工具包（DTK） | 26.04 |",
     f"| Python | {env.get('python')} |",
-    f"| PyTorch | {packages.get('torch')} |",
-    f"| torchvision | {packages.get('torchvision')} |",
-    f"| Flash Attention | {packages.get('flash_attn')} |",
+    f"| 模型运行框架 PyTorch | {str(packages.get('torch')).split('+')[0]}，海光适配版 |",
+    f"| 图像处理组件 torchvision | {str(packages.get('torchvision')).split('+')[0]}，海光适配版 |",
+    f"| 注意力加速组件 Flash Attention | {str(packages.get('flash_attn')).split('+')[0]}，海光适配版 |",
     f"| NumPy | {packages.get('numpy')} |",
-    f"| 训练辅助依赖 | iopath {packages.get('iopath')}；portalocker {packages.get('portalocker')} |",
     "| 容器名称 | zk-vggt |",
     "| 项目目录 | /home/zk/vggt/validation-project |", "",
     "容器镜像：`harbor.sourcefind.cn:5443/hcu/admin/base/pytorch:2.9.0-ubuntu22.04-dtk26.04-py3.10`。", "",
-    "镜像 ID：`sha256:d7dda89f35e0f413e7d8d1dec10121e83028d3796d1190da112ae22526fdee24`。", "",
-    "### 1.3 模型与权重", "",
+    "上述镜像将所需运行环境打包在一起，便于在相同配置下重复测试。完整软件版本和环境记录保存在项目的 `environment.json` 中。", "",
+    "### 1.3 测试模型", "",
     "- 模型：VGGT-1B。",
-    f"- 官方源码提交：`{env.get('source_commit', {}).get('stdout', 'unknown')}`；源码工作树状态：`{env.get('source_status', {}).get('stdout') or 'clean'}`。",
-    f"- 权重：model.pt，{env.get('checkpoint', {}).get('bytes')} 字节。",
-    f"- 权重 SHA256：`{env.get('checkpoint', {}).get('sha256')}`。", "",
+    "- 使用官方模型代码和官方预训练参数文件 `model.pt`。预训练参数是模型已经学习得到的参数，用于真实图片处理测试。",
+    "- 功能与性能测试还使用随机生成的模型参数，以分别检查模型能否运行及其计算开销。",
+    "- 具体代码版本、参数文件大小和文件校验信息保存在环境记录中，可用于确认复现实验时使用相同材料。", "",
     "## 2. 实验目的与方法", "",
-    "本实验验证 VGGT 在海光 BW100 平台上的环境可用性、Flash Attention 执行能力、前向推理、基本数值行为、性能与显存占用，以及单卡和八卡分布式训练图的执行能力。", "",
-    "### 2.1 推理与 Flash Attention", "",
-    "Flash 算子测试覆盖 FP16、BF16，分别执行强制 Flash SDPA 和直接 Flash 接口的前向、反向，检查输出与梯度有限性及两种调用接口的一致性。通过框架算子记录确认 Flash 执行路径。", "",
-    "随机权重前向检查覆盖 4 帧 518×518 FP32、1 帧 224×224 FP32、4 帧 224×224 BF16。真实权重检查覆盖随机图像、相同帧输入和官方 kitchen 示例前 4 张图片，检查输出形状、有限性、相机位姿合法性、自一致性与重复推理结果。", "",
-    "BF16 推理主干指定 Flash Attention；FP32 数值检查使用可用的原生后端，相机头保持模型定义的 FP32 计算精度。", "",
+    "本实验主要回答三个问题：模型能否正常处理图片、处理不同数量图片需要多长时间和多少显存、能否完成单卡及八卡协同训练。", "",
+    "### 2.1 图片处理与 Flash Attention 加速", "",
+    "“推理”指将图片输入模型，得到相机参数、深度和三维点坐标等结果。Flash Attention 是模型中的一种计算加速技术，用于减少注意力计算的显存需求。本实验既检查加速组件自身能否计算，也通过运行记录确认 VGGT 实际调用了它。", "",
+    "加速组件覆盖 FP16 和 BF16 两种 16 位计算格式。这两种格式可减少显存用量。测试同时检查图片处理所需的正向计算和训练所需的反向计算，确认两种调用方式的结果一致，且没有出现无效数值。", "",
+    "模型功能测试包括：4 张 518×518 图片、1 张 224×224 图片的常规精度计算，以及 4 张 224×224 图片的 BF16 计算。使用官方预训练参数后，再检查 6 张随机图片、6 张相同图片及官方 kitchen 场景的前 4 张图片，确认结果格式、相机参数和重复计算表现正常。", "",
+    "主要性能测试使用 BF16 和 Flash Attention。常规精度检查使用 FP32（32 位计算格式）；模型中负责估计相机参数的部分保持原有 FP32 设置。", "",
     "### 2.2 性能与显存", "",
-    "使用随机初始化模型、随机图像和 BF16 autocast，分别测试 518×518、224×224 分辨率下的 1、4、8、16、32、64、128 帧输入。每组预热 2 次、计时 5 次，计时前后同步设备。平均延迟仅包含模型前向计算，不包含数据加载。", "",
-    "显存同时记录 PyTorch allocator 的峰值 allocated 与 reserved，单位为十进制 GB。本实验不进行其他注意力后端的性能对照。", "",
-    "### 2.3 单卡与分布式训练", "",
-    "训练使用随机权重、真实 MultitaskLoss 和合成 GT，启用 camera/depth，关闭 point/track，不额外冻结主干。单卡输入为 S=6、224×224，执行 1 个优化步；八卡 DDP 每卡输入为 S=4、224×224，执行 3 个优化步。", "",
-    "使用 BF16 AMP 和 GradScaler，初始 loss scale=65536。单卡 AdamW 参数为 lr=5e-5、weight_decay=0.05；八卡 AdamW 参数为 lr=1e-4、weight_decay=0.01。", "",
-    "训练输入 SDPA 的 Q/K/V 使用连续内存布局，激活检查点重计算保持相同设置；模型 CPU 初始化使用 1 线程，之后恢复 8 线程计算。推理性能基准保持原生张量布局。", "",
-    "DDP 各 rank 使用不同输入。除检查全部已产生梯度的有限性外，还对每个可训练参数与梯度张量最多 257 个等距样本进行跨卡一致性检查，并确认优化器实际更新。该检查覆盖每个可训练张量，但不等同于全张量逐元素同步校验。", "",
+    "分别测试 518×518、224×224 分辨率下，一次输入 1、4、8、16、32、64、128 张图片的情况。每组先运行 2 次预热，再运行 5 次取平均耗时；计时等待设备计算真正结束。这里的耗时是处理整组图片的模型计算时间，不包含读取图片的时间。", "",
+    "显存记录运行过程中的最大值，单位为 GB。“计算使用显存”指框架分配给模型数据和计算结果的空间；“框架预留显存”还包括为后续计算保留的可复用空间，两列不能相加。", "",
+    "### 2.3 单卡与八卡协同训练", "",
+    "“训练”指模型先计算结果，再根据误差调整自身参数。本实验使用人工生成的图片和参考数据，配合 VGGT 自带的训练误差计算方法，检查这一流程能否完整完成；不以少量测试步骤判断模型能否训练收敛。", "",
+    "单卡每次输入 6 张 224×224 图片，完成 1 次参数更新。八卡协同训练采用 DDP 方式，即 8 张卡分别处理不同输入，再同步训练所需的数据，共同更新同一个模型；每卡每次输入 4 张 224×224 图片，连续完成 3 次参数更新。", "",
+    "训练启用相机参数和深度估计任务。计算使用 BF16，并按脚本固定配置执行；模型初始化使用 1 个 CPU 线程，计算阶段使用 8 个线程。训练数据在进入 Flash 计算前采用连续存储方式。详细训练参数见项目 README 和结果文件。", "",
+    "除检查计算结果有效、模型参数确实发生更新外，还检查 8 张卡上的训练计算和更新后参数是否一致。同步检查对每组可训练参数及其训练计算结果各抽取最多 257 个数据点，属于抽样检查。", "",
     "## 3. 实验结果", "",
     "### 3.1 测试项目汇总", "",
-    "| 测试项目 | 状态 | 结果日志 |", "| --- | --- | --- |",
+    "| 测试项目 | 结果 | 检查内容 |", "| --- | --- | --- |",
 ]
-labels = {"environment": "软硬件环境与模型标识", "flash": "Flash 前向与反向", "smoke": "随机权重前向推理", "correctness": "真实权重与基本数值检查", "benchmark_flash": "推理性能与显存", "training": "单卡训练图", "ddp": "八卡 DDP 训练图"}
-for key, label in labels.items():
-    lines.append(f"| {label} | {phases.get(key, {}).get('status', 'NOT RUN')} | {key}.log |")
+labels = {"environment": ("运行环境", "8 张卡可识别，软件和模型文件可用"), "flash": ("Flash Attention 加速", "图片处理和训练所需计算均可执行"), "smoke": ("模型基本运行", "不同图片数量和尺寸下可完成计算"), "correctness": ("官方预训练模型", "检查真实图片结果及重复计算表现"), "benchmark_flash": ("处理速度与显存", "测量不同图片规模的计算开销"), "training": ("单卡训练流程", "完成计算、误差分析和参数更新"), "ddp": ("八卡协同训练", "完成卡间通信、同步和连续参数更新")}
+for key, (label, description) in labels.items():
+    status = {"PASS": "通过", "FAIL": "未通过"}.get(phases.get(key, {}).get("status"), "未执行")
+    lines.append(f"| {label} | {status} | {description} |")
 lines += ["", "### 3.2 Flash Attention 执行验证", ""]
 for row in flash.get("tests", []):
-    lines.append(f"- {row['dtype']}：{row['status']}；强制 SDPA 与直接 Flash 接口输出相对 L2 差异 {row['forward_relative_l2']:.3g}，梯度最大相对 L2 差异 {max(row['gradient_relative_l2']):.3g}。")
-lines += ["- 最小算子及真实权重模型的框架算子记录均包含 `aten::_scaled_dot_product_flash_attention` 和 `aten::_flash_attention_forward`。", "",
-          "### 3.3 真实权重与基本数值行为", ""]
+    status = "通过" if row["status"] == "PASS" else "未通过"
+    dtype_label = {"torch.float16": "FP16", "torch.bfloat16": "BF16"}.get(row["dtype"], row["dtype"])
+    lines.append(f"- {dtype_label}：{status}。两种 Flash 调用方式的输出整体差异为 {row['forward_relative_l2']:.3g}，反向计算结果的最大相对差异为 {max(row['gradient_relative_l2']):.3g}。")
+lines += ["- 加速组件单独测试通过；VGGT 实际运行记录也确认调用了 Flash Attention。", "",
+          "### 3.3 图片处理结果检查", ""]
 camera, same = correct.get("camera", {}), correct.get("identical_frames", {})
 lines += [
-    f"- 6 帧 518×518 随机输入：旋转正交性最大误差 {metric(camera.get('orthogonal_max_abs'), '.3e')}，det(R) 范围 {metric(camera.get('det_min'), '.7f')}–{metric(camera.get('det_max'), '.7f')}，焦距均为正。",
-    f"- 6 张相同输入：位姿 std={metric(same.get('pose_std'), '.3e')}，深度 std={metric(same.get('depth_std'), '.3e')}，均满足实验判据 <0.01。",
-    "- kitchen 示例图片推理输出有限；BF16 Flash 重复推理主要输出的最大绝对差为 0。", "",
-    "同组真实图片的 FP32 与 BF16 输出相对 L2 差异如下。这些数据用于观察数值模式差异，不作为数据集重建精度指标。", "",
-    "| 输出 | 相对 L2 差异 |", "| --- | ---: |",
+    "- 输入 6 张 518×518 图片后，输出的相机位置、朝向和焦距通过基本有效性检查，计算结果均为有效数值。",
+    f"- 输入 6 张相同图片时，相机参数的帧间波动为 {metric(same.get('pose_std'), '.6f')}，深度结果的帧间波动为 {metric(same.get('depth_std'), '.6f')}，均低于测试阈值 0.01。这里以标准差衡量波动，数值越接近 0，说明结果越一致。",
+    "- 使用官方 kitchen 场景图片，模型可正常输出结果；相同输入重复运行时，主要输出完全一致。", "",
+    "同组真实图片分别采用 FP32 和 BF16 计算，整体数值差异如下。比例越小，说明两种计算格式的结果越接近；这些比例不是实际场景的重建精度或业务准确率。", "",
+    "| 输出内容 | 与 FP32 相比的整体数值差异 |", "| --- | ---: |",
 ]
 for key, value in correct.get("fp32_bf16_relative_l2", {}).items():
-    lines.append(f"| {key} | {value:.4%} |")
+    label = {"pose_enc": "相机参数", "depth": "深度（物体远近）", "world_points": "三维点坐标（空间位置）"}.get(key, key)
+    lines.append(f"| {label} | {value:.4%} |")
 lines += ["", "### 3.4 推理性能与显存", "",
-          "| 帧数 | 分辨率 | 状态 | 平均延迟 ms | 帧/秒 | 峰值 allocated GB | 峰值 reserved GB |",
+          "一组图片的平均耗时越短，处理速度越快；1000 毫秒（ms）等于 1 秒。“每秒图片数”由一组图片的数量除以整组处理时间计算。", "",
+          "| 图片数量 | 单张图片分辨率 | 结果 | 整组平均耗时 ms | 每秒图片数 | 计算使用显存峰值 GB | 框架预留显存峰值 GB |",
           "| ---: | --- | --- | ---: | ---: | ---: | ---: |"]
 for row in bench["runs"]:
     if row["status"] == "OOM":
-        lines.append(f"| {row['frames']} | {row['resolution']}×{row['resolution']} | OOM | — | — | — | — |")
+        lines.append(f"| {row['frames']} | {row['resolution']}×{row['resolution']} | 显存不足 | — | — | — | — |")
     else:
-        lines.append(f"| {row['frames']} | {row['resolution']}×{row['resolution']} | PASS | {row['ms']:.1f} | {row['fps']:.2f} | {row['peak_allocated_GB']:.2f} | {row['peak_reserved_GB']:.2f} |")
+        lines.append(f"| {row['frames']} | {row['resolution']}×{row['resolution']} | 通过 | {row['ms']:.1f} | {row['fps']:.2f} | {row['peak_allocated_GB']:.2f} | {row['peak_reserved_GB']:.2f} |")
 lines += ["", f"共执行 {len(bench['runs'])} 组性能测试，通过 {len(passed_rows)} 组。本实验在 518×518、224×224 分辨率下分别验证至 {capacity[518]}、{capacity[224]} 帧。", "",
-          "### 3.5 单卡训练图", ""]
+          "### 3.5 单卡训练流程", ""]
 for row in train.get("steps", []):
-    lines.append(f"- S=6、224×224，loss={row['loss']:.6f}。")
-    lines.append(f"- 前向、反向、优化及校验耗时 {row['seconds_including_checks']:.2f}s，峰值 allocated 显存 {row['peak_allocated_GB']:.2f}GB。")
-    lines.append(f"- 梯度有限，参数样本最大更新量 {row['parameter_max_sample_update']:.6g}，优化器完成实际更新，GradScaler 未跳步。")
-lines += ["", "### 3.6 八卡 DDP 训练图", ""]
+    lines.append("- 一次输入 6 张 224×224 图片，完成结果计算、误差计算和模型参数更新。")
+    lines.append(f"- 完整训练步骤及检查共耗时 {row['seconds_including_checks']:.2f} 秒，计算使用显存峰值 {row['peak_allocated_GB']:.2f}GB。")
+    lines.append(f"- 训练误差指标为 {row['loss']:.6f}，训练计算结果均为有效数值。检查确认模型参数确实发生更新，没有跳过该次训练更新。")
+lines += ["", "### 3.6 八卡协同训练", ""]
 if all(ddp):
     steps = ddp[0].get("steps", [])
-    lines.append(f"8 个 rank 完成测试，all_reduce 哨兵求和为 {ddp[0].get('all_reduce_sentinel'):.0f}（期望 36），每 rank 执行 {len(steps)} 步。")
-    lines += ["", "| 步数 | 各 rank loss 范围 | 梯度样本跨卡最大差 | 优化后参数样本跨卡最大差 |",
+    lines.append(f"8 张卡的通信检查通过，并共同完成连续 {len(steps)} 次训练更新。每张卡使用不同输入，更新后对模型参数进行抽样检查。")
+    lines += ["", "| 训练步骤 | 8 张卡的训练误差指标范围 | 各卡训练计算是否一致（抽样） | 更新后模型参数是否一致（抽样） |",
               "| ---: | --- | ---: | ---: |"]
     for row in steps:
-        lines.append(f"| {row['step']} | {min(row['rank_losses']):.6f}–{max(row['rank_losses']):.6f} | {row['gradient_sample_max_rank_difference']:.1f} | {row['parameter_sample_max_rank_difference']:.1f} |")
-    lines += ["", f"全部 rank、全部步骤的峰值 allocated 显存最大值为 {max(row['peak_allocated_GB'] for d in ddp for row in d.get('steps', [])):.2f}GB/卡。每步均通过梯度有限性、同步样本一致性及优化器实际更新检查。"]
-lines += ["", "## 4. 实验范围与可复现性", "",
-    "本实验覆盖环境可用性、Flash 算子、模型推理、基本数值行为、短步训练图和单机八卡 DDP，不包含 CO3D 完整训练、收敛性评估、带独立任务 GT 的精度评测或长期稳定性测试。位姿合法与相同帧一致不等同于重建精度验收。", "",
-    "Flash 执行证据来自框架算子记录，未进行 GPU kernel 级 hipprof 跟踪。性能测试仅验证列出的输入规模，不推断更大规模的容量。", "",
-    "实验脚本和使用方法见项目 README。结果目录中的 manifest.json 保存各项目执行命令、UTC 起止时间和退出码；environment.json 保存软件版本、源码提交、权重 SHA256 及实验脚本哈希。模型权重与上游源码通过固定提交和哈希标识关联。", "",
+        gradient_status = "一致，抽样差异为 0" if row["gradient_sample_max_rank_difference"] == 0 else "存在差异"
+        parameter_status = "一致，抽样差异为 0" if row["parameter_sample_max_rank_difference"] == 0 else "存在差异"
+        lines.append(f"| {row['step'] + 1} | {min(row['rank_losses']):.6f}–{max(row['rank_losses']):.6f} | {gradient_status} | {parameter_status} |")
+    lines += ["", "各卡处理的图片不同，因此训练误差指标可以不同。表中的误差指标用于记录训练过程，不代表实际应用准确率；3 次训练也不足以判断模型是否已经学好。", "",
+              f"八卡训练期间，单卡计算使用显存峰值最大为 {max(row['peak_allocated_GB'] for d in ddp for row in d.get('steps', [])):.2f}GB。每次训练更新均通过计算有效性、同步抽样和实际参数更新检查。"]
+lines += ["", "## 4. 本次测试覆盖范围", "",
+    "本次测试确认了模型能否运行、加速功能能否使用、处理速度和显存开销，以及单卡和八卡训练流程能否完成。", "",
+    "本次没有使用完整 CO3D 数据集进行长期训练，也没有用带标准答案的业务数据评估三维重建精度。因此，结果可作为兼容性和基础运行能力的依据；实际业务精度、训练效果及长时间稳定性仍需结合后续专项测试确认。测试容量仅限于表中列出的规模。", "",
+    "测试脚本和操作步骤见项目 README。原始结果保留了每项测试的执行命令、时间、返回状态、完整软件版本和模型文件标识，技术人员可据此复核或重复测试。", "",
     "## 5. 结论", "",
     f"本次实验{'所有测试项目均通过' if complete else '尚未全部通过或证据不完整，需结合项目状态和日志进一步确认'}。",
 ]
 if complete:
-    lines += ["", "在本报告列出的软硬件环境和实验配置下，海光 BW100 支持 Flash Attention 的 FP16/BF16 前向与反向计算，VGGT 能完成真实权重推理、单卡训练图及单机八卡 DDP 训练图。", "",
-              f"推理性能测试共 {len(bench['runs'])} 组，通过 {len(passed_rows)} 组；518×518 和 224×224 分辨率分别成功运行至 {capacity[518]}、{capacity[224]} 帧。单卡优化更新及八卡连续 3 步训练通过梯度有限性、参数更新和采样同步验证，表明上述执行路径在本实验条件下可用。", "",
-              "本次测试形成了覆盖环境配置、模型推理、性能评估及分布式训练图验证的实验记录，为 VGGT 在海光 DCU 平台上的适配与应用提供了可复现的技术依据，也为后续开展性能优化、资源配置和部署方案评估提供了参考。", "",
+    lines += ["", "在本报告列出的软硬件环境和测试配置下，VGGT 可以在海光 BW100 上完成图片处理、单卡训练步骤和八卡协同训练步骤，Flash Attention 加速功能已实际运行验证。", "",
+              f"共完成 {len(bench['runs'])} 组处理速度和显存测试，全部 {len(passed_rows)} 组通过；518×518 和 224×224 分辨率分别成功处理一次输入 {capacity[518]}、{capacity[224]} 张图片的情况。单卡完成参数更新，八卡连续完成 3 次训练更新，且同步抽样检查通过，表明这些基础运行流程在本次测试条件下可用。", "",
+              "本次测试形成了覆盖环境配置、图片处理、性能评估和多卡训练的完整实验记录，为 VGGT 在海光 DCU 平台上的适配与应用提供了可复核的技术依据，也为后续性能优化、资源配置和部署方案评估提供了参考。", "",
               "后续可在本次验证基础上，结合实际业务数据和应用需求，进一步开展完整数据集训练、任务精度评测及长时间稳定性验证，持续完善从基础适配到业务应用的验证流程，为后续工程实施和应用落地奠定基础。"]
 lines += ["", "项目代码及复现脚本：[VGGT DCU 测试项目（GitLab）](https://developer.sourcefind.cn/codes/zhengke/vggt_dcu)。", ""]
 target = args.output or args.results / "report.md"

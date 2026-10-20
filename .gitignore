@@ -10,3 +10,4 @@ checkpoints/
 .venv/
 *.zip
 /dist/
+/references/VGGT_海光DCU_验证报告与Runbook.md
