@@ -198,6 +198,17 @@ python -u scripts/run_suite.py \
 python scripts/make_report.py results/my_run --output reports/测试报告.md
 ```
 
+本次完整报告中的优化对照，可从已保存的数据一起生成：
+
+```bash
+python scripts/make_report.py results/20261020_flash \
+  --optimization-results \
+    results/optimization_20261020_presets/optimization_screen.json \
+    results/optimization_20261020_large/optimization_screen.json \
+    results/optimization_20261020_224/optimization_screen.json \
+  --output reports/VGGT_DCU_完整测试报告_20261020.md
+```
+
 ## 5. 分项运行
 
 在容器内设置路径并执行所需项目：

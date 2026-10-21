@@ -6,6 +6,8 @@ from pathlib import Path
 p = argparse.ArgumentParser()
 p.add_argument("results", type=Path)
 p.add_argument("--output", type=Path)
+p.add_argument("--optimization-results", type=Path, nargs="+", default=[],
+               help="Paired baseline/preset_fused optimization_screen.json files")
 args = p.parse_args()
 
 
@@ -30,6 +32,16 @@ complete = len(phases) == 7 and all(v["status"] == "PASS" for v in phases.values
 packages = env.get("packages", {})
 passed_rows = [row for row in bench["runs"] if row["status"] == "PASS"]
 capacity = {r: max([row["frames"] for row in passed_rows if row["resolution"] == r], default=0) for r in (518, 224)}
+optimization_rows = []
+for path in args.optimization_results:
+    experiment = json.loads(path.read_text(encoding="utf-8"))
+    assert experiment["weights"] == "checkpoint"
+    baseline = {row["input"]: row for row in experiment["runs"] if row.get("variant") == "baseline"}
+    for row in experiment["runs"]:
+        if row.get("variant") == "preset_fused":
+            assert row["agreement"]["status"] == "PASS", f"Optimization comparison failed: {path}"
+            reference = baseline[row["input"]]
+            optimization_rows.append((experiment, reference, row, 1-row["median_ms"]/reference["median_ms"]))
 lines = [
     "# VGGT 海光 BW100 测试报告", "",
     "测试日期：2026-10-20（Asia/Shanghai）。", "",
@@ -128,6 +140,23 @@ if all(ddp):
         lines.append(f"| {row['step'] + 1} | {min(row['rank_losses']):.6f}–{max(row['rank_losses']):.6f} | {gradient_status} | {parameter_status} |")
     lines += ["", "各卡处理的图片不同，因此训练误差指标可以不同。表中的误差指标用于记录训练过程，不代表实际应用准确率；3 次训练也不足以判断模型是否已经学好。", "",
               f"八卡训练期间，单卡计算使用显存峰值最大为 {max(row['peak_allocated_GB'] for d in ddp for row in d.get('steps', [])):.2f}GB。每次训练更新均通过计算有效性、同步抽样和实际参数更新检查。"]
+if optimization_rows:
+    position = lines.index("## 3. 实验结果")
+    lines[position:position] = ["### 2.4 推理优化对照", "",
+        "使用官方预训练参数，在相同输入、分辨率和计算格式下，分别测量原实现与优化实现。每组预热 1 次、计时 3 次取中位数，计时等待设备计算结束，不包含读取图片、结果传回 CPU 和数值检查；首次编译开销不计入预热后的耗时。此项与第 3.4 节随机初始化参数、5 次平均的性能测试分别记录。", ""]
+    lines += ["", "### 3.7 推理优化及效果", "",
+        "本轮保留输入图片数量、分辨率、模型参数和输出内容，主要采用三项调整：重用固定的位置数据，减少重复生成和等待；合并位置变换中的多次小计算；将深度和三维点的最终输出按每组 16 张处理。全部图片仍在模型主干中联合分析，输出分组不拆分图片之间的关联计算。", "",
+        "| 分辨率/输入 | 图片数量 | 原实现耗时 ms | 优化后耗时 ms | 耗时降低 | 原实现显存 GB | 优化后显存 GB | 输出对照 |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |"]
+    for experiment, reference, row, reduction in optimization_rows:
+        label = "官方实景图片（350×518）" if row["input"] == "kitchen4" else f"{experiment['resolution']}×{experiment['resolution']}"
+        frames = 4 if row["input"] == "kitchen4" else row["input"]
+        lines.append(f"| {label} | {frames} | {reference['median_ms']:.2f} | {row['median_ms']:.2f} | {reduction:.2%} | {reference['peak_allocated_GB']:.2f} | {row['peak_allocated_GB']:.2f} | 通过 |")
+    max_difference = max(value["max_abs"] for _, _, row, _ in optimization_rows for value in row["agreement"]["outputs"].values())
+    lines += ["", "耗时降低按“1－优化耗时÷原实现耗时”计算；显存为计算使用显存峰值。优化可能增加临时显存使用，需结合速度和显存共同评估。",
+        "", f"共 {len(optimization_rows)} 组完整模型对照全部通过，检查了相机参数、深度、三维点和置信结果等输出的字段、形状、有效数值及数值差异。采用的相对与绝对容差均为 0.002，实际最大绝对差为 {max_difference:.9g}。该检查用于验证计算结果的一致性，不代表业务重建精度评测。", "",
+        "启用方式是在推理命令中添加 `--preset fused`，需要镜像已提供的 Triton 3.3.0；首次使用需编译并预热。默认运行方式保持不变，训练脚本不受影响。具体命令、独立计算检查及逐次测量记录见项目 README 和推理优化评估。", "",
+        "高分辨率、图片较多时，模型需要分析更多图片之间的关联，计算量会快速增加。本轮优化减少了重复计算和数据读写，仍保留完整的联合分析，因此大图片数量时的吞吐下降仍可能存在。"]
 lines += ["", "## 4. 本次测试覆盖范围", "",
     "本次测试确认了模型能否运行、加速功能能否使用、处理速度和显存开销，以及单卡和八卡训练流程能否完成。", "",
     "本次没有使用完整 CO3D 数据集进行长期训练，也没有用带标准答案的业务数据评估三维重建精度。因此，结果可作为兼容性和基础运行能力的依据；实际业务精度、训练效果及长时间稳定性仍需结合后续专项测试确认。测试容量仅限于表中列出的规模。", "",
@@ -140,6 +169,10 @@ if complete:
               f"共完成 {len(bench['runs'])} 组处理速度和显存测试，全部 {len(passed_rows)} 组通过；518×518 和 224×224 分辨率分别成功处理一次输入 {capacity[518]}、{capacity[224]} 张图片的情况。单卡完成参数更新，八卡连续完成 3 次训练更新，且同步抽样检查通过，表明这些基础运行流程在本次测试条件下可用。", "",
               "本次测试形成了覆盖环境配置、图片处理、性能评估和多卡训练的完整实验记录，为 VGGT 在海光 DCU 平台上的适配与应用提供了可复核的技术依据，也为后续性能优化、资源配置和部署方案评估提供了参考。", "",
               "后续可在本次验证基础上，结合实际业务数据和应用需求，进一步开展完整数据集训练、任务精度评测及长时间稳定性验证，持续完善从基础适配到业务应用的验证流程，为后续工程实施和应用落地奠定基础。"]
+if optimization_rows:
+    conclusion = (f"推理优化另完成 {len(optimization_rows)} 组同条件对照，耗时降低 {min(row[3] for row in optimization_rows):.2%}–{max(row[3] for row in optimization_rows):.2%}，输出数值检查全部通过。优化在保留完整图片联合分析的基础上改善了处理效率，可为后续资源配置与部署提供参考；具体收益及显存开销应按实际输入规模评估。")
+    position = next((i for i, line in enumerate(lines) if line.startswith("本次测试形成了覆盖")), len(lines))
+    lines[position:position] = [conclusion, ""]
 lines += ["", "项目代码及复现脚本：[VGGT DCU 测试项目（GitLab）](https://developer.sourcefind.cn/codes/zhengke/vggt_dcu)。", ""]
 target = args.output or args.results / "report.md"
 target.parent.mkdir(parents=True, exist_ok=True)
